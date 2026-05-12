@@ -32,9 +32,9 @@ window.HOME = {
       elevationB: 12000
     },
     upgrades: [
-      { name: "Hardwood Floor Upgrade", amount: 5000, note: "Beyond Gold Package standard" },
-      { name: "Kitchen Upgrade (quartz, cabinets)", amount: 7000, note: "Premium quartz, level 3 cabinets" },
-      { name: "Fireplace", amount: 5000, note: "Standard wood-burning fireplace" },
+      { name: "Hardwood Floor Upgrade (beyond RevWood)", amount: 3000, note: "Above standard Luxury RevWood wide plank" },
+      { name: "Kitchen Upgrade (premium tier)", amount: 5000, note: "Beyond standard 25-color cabinet + granite/quartz selection" },
+      { name: "Fireplace", amount: 0, note: "Direct vent + custom mantel + gas line — INCLUDED in Gold", included: true },
       { name: "Morning Room", amount: 0, note: "Included in plan", included: true }
     ],
     customizations: [
@@ -169,15 +169,17 @@ window.HOME = {
       "images/gold-features/page-7.jpg"
     ],
     highlights: [
-      { category: "Garage", items: ["3-Car Garage (standard)", "Insulated steel garage doors", "Side entry door", "Garage door opener with two transmitters", "Keyless entry pad"] },
-      { category: "Ceilings & Structure", items: ["9' main floor ceilings", "9' basement ceilings", "8' poured concrete basement walls", "Full basement (no crawl space)", "30-year transferable basement waterproofing warranty"] },
-      { category: "Kitchen", items: ["Granite countertops (3cm)", "Tile backsplash", "Merillat maple/oak cabinets", "Soft-close drawers + 6-way hinges", "42\" upper cabinets", "Rollout shelf in base cabinets", "Half horsepower garbage disposal"] },
-      { category: "Flooring", items: ["LVT in kitchen, foyer, great room, baths, laundry", "Mohawk SmartStrand carpet w/ padding throughout"] },
-      { category: "Bathrooms", items: ["Comfort height vanities", "Quartz vanity tops (white china undermount sinks)", "Sterling Vikrel 4-piece tub/shower", "Kohler comfort height elongated toilets"] },
-      { category: "Plumbing & HVAC", items: ["PEX water lines", "Delta water saving faucets", "50-gallon electric water heater", "Lennox 96% efficient 2-stage gas furnace", "Lennox 13.4 SEER2 high efficiency AC"] },
-      { category: "Electrical", items: ["200-amp electrical service", "LED light bulbs throughout", "Smoke + CO detectors", "GFCI outlets per code", "Garage coach lights"] },
-      { category: "Exterior", items: ["Maintenance-free vinyl siding (lifetime warranty)", "Cultured stone plinth on front", "Seamless aluminum gutters", "Steep-pitched roof designs", "CertainTeed dimensional shingles (limited lifetime)", "Energy-efficient LowE windows w/ argon gas"] },
-      { category: "Warranty", items: ["10-year insured transferable structural warranty", "Locked-in price (with financing in 60 days)", "Recipient of National Housing Quality (NHQ) Award"] }
+      { category: "Structural", items: ["2x6 exterior walls (stronger, quieter, more efficient)", "9' tall poured concrete foundation walls reinforced with steel", "Full basement design (no crawl space)", "Engineered floor beams (less floor bounce)", "Premium 3/4\" tongue & groove OSB subfloor (50-year warranty)", "Tyvek house wrap + sealing tape", "Steel I-beam with steel post in basement"] },
+      { category: "Exterior", items: ["James Hardie® fiber-cement siding, soffits, rakes & trim (30-yr warranty)", "Partial cultured stone or brick on front of home", "Pella windows w/ Low-E argon, double-hung (lifetime warranty)", "Thermatru fiberglass insulated front door + sidelites", "Wayne Dalton steel insulated raised-panel garage door + openers", "True dimensional shingles w/ SureNail Technology (lifetime warranty)", "Exterior frost-free hose faucets"] },
+      { category: "Garage", items: ["3-car garage standard", "Wayne Dalton insulated overhead doors w/ openers"] },
+      { category: "Interior", items: ["9' ceilings on first floor", "Oversized 3½\" door casing, 5½\" baseboards", "Direct vent fireplace w/ Level 4 tile + custom-built mantel + gas line (INCLUDED)", "Luxury RevWood wide-plank flooring (foyer, great rm, study, dining, kitchen, breakfast, mud rm)", "Upgraded Level 3 stain-resistant carpet w/ 8lb pad", "Ceramic tile in baths", "11 recessed can lights + $3,500 lighting allowance"] },
+      { category: "Kitchen", items: ["Granite OR Quartz countertops (15 color options)", "Decorative Level 4 tile backsplash", "42\" wall cabinets w/ 3\" crown", "Solid wood drawer boxes, full-extension hardware", "Soft-close hardware on doors + drawers", "25 cabinet paint/stain color choices", "Deluxe oversized island", "Half-horsepower garbage disposal"] },
+      { category: "Bathrooms", items: ["Luxury primary bath: 6' soaking tub + separate walk-in shower w/ door", "Granite vanity tops w/ undermount sinks", "35\" tall vanity cabinets", "Delta dual-handle brushed nickel/chrome fixtures", "Comfort-height elongated toilets", "Decorative wall tile to ceiling in showers + tub/shower combos"] },
+      { category: "Energy & HVAC", items: ["96% efficient 2-stage variable-speed gas furnace + 16 SEER A/C", "R-50 attic insulation, R-19 wall insulation", "Energy-saving programmable thermostat", "50-gallon energy-efficient electric hot water tank", "Special interior air infiltration package", "Award-winning HER (Home Energy Rating) scores"] },
+      { category: "Electrical", items: ["200-amp electrical service", "11 recessed can lights", "$3,500 lighting package allowance", "Smoke + CO detectors", "GFCI exterior outlets by doors", "Exterior coach lights"] },
+      { category: "Water Protection", items: ["Lifetime warranty water barrier system on foundation", "Interior + exterior drains around full foundation walls + sump pump", "Gravel around foundation for drainage", "Tyvek house wrap + sealing tape at windows/doors", "Professional water-intrusion inspection on every home"] },
+      { category: "Warranty (Headline)", items: ["⭐ 30-YEAR structural warranty (most builders give 10)", "Lifetime warranty: roof, windows, water barrier, Delta fixtures, heat exchanger", "30-year warranty: Hardie siding, plumbing lines, house wrap", "10 years: furnace parts"] },
+      { category: "The Diyanni Difference", items: ["5th generation, family-owned builder", "Building custom homes 40+ years", "Full customization service", "5× winner of Parade of Homes People's Choice Award", "B.I.A. approved", "Real-time online buyer portal to follow your build"] }
     ]
   }
 };

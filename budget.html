@@ -9,6 +9,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
 <script src="js/meta.js"></script>
 </head>
 <body data-page="budget">
@@ -115,6 +118,35 @@
 <script src="js/data.js"></script>
 <script src="js/app.js"></script>
 <script>
+// If Supabase is connected, override HOME.budget with live data before rendering
+async function hydrateFromDB() {
+  if (!window.DB) return;
+  try {
+    const [items, settings] = await Promise.all([DB.getBudgetItems(), DB.getBudgetSettings()]);
+    const grouped = { upgrades: [], customizations: [], siteWork: [] };
+    items.forEach(it => {
+      if (it.category === 'Base Home') {
+        if (it.name.toLowerCase().includes('elevation')) HOME.budget.base.elevationB = it.planned_amount;
+        else HOME.budget.base.basePrice = it.planned_amount;
+      } else if (it.category === 'Upgrades') {
+        grouped.upgrades.push({ name: it.name, amount: it.planned_amount, note: it.notes || '', included: it.is_included });
+      } else if (it.category === 'Customizations') {
+        grouped.customizations.push({ name: it.name, amount: it.planned_amount, note: it.notes || '' });
+      } else if (it.category === 'Site Work') {
+        grouped.siteWork.push({ name: it.name, amount: it.planned_amount, note: it.notes || '' });
+      } else if (it.category === 'Contingency & Loan' && it.name.toLowerCase().includes('loan')) {
+        HOME.budget.loanCosts = it.planned_amount;
+      }
+    });
+    if (grouped.upgrades.length) HOME.budget.upgrades = grouped.upgrades;
+    if (grouped.customizations.length) HOME.budget.customizations = grouped.customizations;
+    if (grouped.siteWork.length) HOME.budget.siteWork = grouped.siteWork;
+    HOME.budget.target = settings.target_budget;
+    HOME.budget.contingencyPct = parseFloat(settings.contingency_pct);
+    HOME.sqft = settings.square_feet;
+  } catch (e) { console.warn('DB hydrate failed:', e); }
+}
+
 let chart;
 function getOverrides() {
   return {
@@ -219,7 +251,17 @@ function recalc() {
   document.getElementById(id).addEventListener('input', recalc);
 });
 
-recalc();
+// Initial render: hydrate from DB if available, then compute
+(async () => {
+  await hydrateFromDB();
+  // Update slider defaults from hydrated data
+  const landItem = HOME.budget.siteWork && HOME.budget.siteWork[0];
+  if (landItem) document.getElementById('landSlider').value = landItem.amount;
+  const upTotal = HOME.budget.upgrades.reduce((s,u) => s + (u.included ? 0 : u.amount), 0);
+  if (upTotal) document.getElementById('upSlider').value = upTotal;
+  document.getElementById('contSlider').value = Math.round((HOME.budget.contingencyPct || 0.1) * 100);
+  recalc();
+})();
 </script>
 </body>
 </html>

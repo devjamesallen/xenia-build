@@ -85,6 +85,7 @@ function renderNav(activePage = '') {
         <li><a href="floor-plan.html" data-page="floorplan" class="${activePage==='floorplan'?'active':''}">Floor Plan</a></li>
         <li><a href="features.html" data-page="features" class="${activePage==='features'?'active':''}">Features</a></li>
         <li><a href="budget.html" data-page="budget" class="${activePage==='budget'?'active':''}">Budget</a></li>
+        <li><a href="evolution.html" data-page="evolution" class="${activePage==='evolution'?'active':''}">Evolution</a></li>
         <li><a href="timeline.html" data-page="timeline" class="${activePage==='timeline'?'active':''}">Timeline</a></li>
         <li><a href="decisions.html" data-page="decisions" class="${activePage==='decisions'?'active':''}">Decisions</a></li>
       </ul>
@@ -113,9 +114,9 @@ function renderFooter() {
         <div>
           <h4>Quick Links</h4>
           <p style="font-size:14px;line-height:1.7;">
-            <a href="budget.html">Budget</a> · <a href="timeline.html">Timeline</a><br>
-            <a href="decisions.html">Decisions</a> · <a href="gallery.html">Gallery</a><br>
-            <a href="features.html">Gold Features</a>
+            <a href="budget.html">Budget</a> · <a href="evolution.html">Evolution</a><br>
+            <a href="timeline.html">Timeline</a> · <a href="decisions.html">Decisions</a><br>
+            <a href="admin.html">Admin</a> · <a href="gallery.html">Gallery</a>
           </p>
         </div>
       </div>

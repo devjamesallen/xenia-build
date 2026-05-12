@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Budget Evolution · Xenia Home Build</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
+<script src="js/meta.js"></script>
+</head>
+<body data-page="evolution">
+
+<div id="nav-placeholder"></div>
+
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">Budget Evolution</span>
+    <h1>How Costs Are Tracking</h1>
+    <p>Planned vs. actual, and how estimates have changed over time.</p>
+  </div>
+</section>
+
+<!-- KPI CARDS -->
+<section style="padding: 0 0 32px;">
+  <div class="container">
+    <div class="grid grid-4">
+      <div class="card text-center">
+        <div class="card-title">Planned Total</div>
+        <div style="font-size:32px;font-weight:700;font-family:var(--font-display);color:var(--primary);" id="kpiPlanned">$0</div>
+      </div>
+      <div class="card text-center">
+        <div class="card-title">Committed</div>
+        <div style="font-size:32px;font-weight:700;font-family:var(--font-display);color:var(--primary-light);" id="kpiCommitted">$0</div>
+        <p style="font-size:12px;color:var(--text-light);">Actuals + planned where no actual</p>
+      </div>
+      <div class="card text-center">
+        <div class="card-title">Actual Spent</div>
+        <div style="font-size:32px;font-weight:700;font-family:var(--font-display);color:var(--green);" id="kpiActual">$0</div>
+        <p style="font-size:12px;color:var(--text-light);"><span id="kpiPaidCount">0</span> items paid</p>
+      </div>
+      <div class="card text-center">
+        <div class="card-title">vs Target</div>
+        <div style="font-size:32px;font-weight:700;font-family:var(--font-display);" id="kpiVsTarget">$0</div>
+        <p style="font-size:12px;color:var(--text-light);" id="kpiVsTargetLabel">vs target</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EVOLUTION CHART -->
+<section style="padding: 0 0 32px;">
+  <div class="container">
+    <div class="card">
+      <h2>Total Budget Over Time</h2>
+      <p style="color:var(--text-soft); font-size:14px; margin-bottom:16px;">Snapshots taken whenever you click "Take Budget Snapshot" in the admin panel.</p>
+      <div class="chart-container" style="height: 360px;"><canvas id="evolutionChart"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORY BREAKDOWN -->
+<section style="padding: 0 0 32px;">
+  <div class="container">
+    <div class="grid grid-2">
+      <div class="card">
+        <h2>Planned vs Actual by Category</h2>
+        <div class="chart-container" style="height: 320px;"><canvas id="categoryChart"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>Recent Changes</h2>
+        <p style="color:var(--text-soft); font-size:14px;">Every time a budget number changes, it's logged here.</p>
+        <div id="historyList" style="max-height: 320px; overflow-y: auto;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LINE-ITEM TABLE -->
+<section style="padding: 0 0 64px;">
+  <div class="container">
+    <h2 style="font-size:32px;color:var(--primary);margin-bottom:16px;">All Line Items</h2>
+    <table class="table">
+      <thead><tr>
+        <th>Category</th><th>Item</th><th class="amount">Planned</th><th class="amount">Actual</th><th class="amount">Δ</th><th>Vendor</th><th>Paid</th>
+      </tr></thead>
+      <tbody id="itemsTbody"></tbody>
+    </table>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+const fmtAuto = n => n == null ? '—' : fmt(n);
+
+async function loadEvolution() {
+  if (!window.DB) {
+    document.querySelector('.container').innerHTML = `<div class="card text-center" style="margin: 64px 0;">
+      <h2>Supabase Not Connected</h2>
+      <p style="color:var(--text-soft);">Budget evolution tracking requires Supabase. See <code>js/config.js</code> for setup.</p>
+    </div>`;
+    return;
+  }
+
+  try {
+    const [items, totals, snapshots, history, settings, categoryRows] = await Promise.all([
+      DB.getBudgetItems(),
+      DB.getBudgetTotals(),
+      DB.getSnapshots(),
+      DB.getBudgetHistory(20),
+      DB.getBudgetSettings(),
+      DB.getBudgetByCategory()
+    ]);
+
+    // ---- KPIs ----
+    document.getElementById('kpiPlanned').textContent = fmt(totals.total_planned || 0);
+    document.getElementById('kpiCommitted').textContent = fmt(totals.total_committed || 0);
+    document.getElementById('kpiActual').textContent = fmt(totals.total_actual || 0);
+    document.getElementById('kpiPaidCount').textContent = totals.items_paid || 0;
+
+    const target = settings.target_budget;
+    const diff = (totals.total_committed || 0) - target;
+    const el = document.getElementById('kpiVsTarget');
+    el.textContent = (diff >= 0 ? '+' : '-') + fmt(Math.abs(diff));
+    el.style.color = diff > 5000 ? 'var(--red)' : (diff < -5000 ? 'var(--green)' : 'var(--accent)');
+    document.getElementById('kpiVsTargetLabel').textContent = `${diff >= 0 ? 'over' : 'under'} ${fmt(target)} target`;
+
+    // ---- EVOLUTION CHART ----
+    const labels = snapshots.map(s => s.snapshot_date);
+    new Chart(document.getElementById('evolutionChart'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Planned Total',
+            data: snapshots.map(s => s.total_planned),
+            borderColor: '#1F4E78',
+            backgroundColor: 'rgba(31,78,120,0.1)',
+            tension: 0.2, fill: true
+          },
+          {
+            label: 'Committed (Actual + remaining planned)',
+            data: snapshots.map(s => s.total_committed),
+            borderColor: '#D4A017',
+            backgroundColor: 'rgba(212,160,23,0.1)',
+            tension: 0.2, fill: false
+          },
+          {
+            label: 'Target Budget',
+            data: snapshots.map(() => target),
+            borderColor: '#EF4444',
+            borderDash: [6, 6],
+            pointRadius: 0,
+            fill: false
+          }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: { callbacks: { label: c => `${c.dataset.label}: ${fmt(c.parsed.y)}` } }
+        },
+        scales: {
+          y: { ticks: { callback: v => '$' + (v/1000).toFixed(0) + 'K' } }
+        }
+      }
+    });
+
+    // ---- CATEGORY CHART ----
+    new Chart(document.getElementById('categoryChart'), {
+      type: 'bar',
+      data: {
+        labels: categoryRows.map(r => r.category),
+        datasets: [
+          { label: 'Planned', data: categoryRows.map(r => r.planned), backgroundColor: '#1F4E78' },
+          { label: 'Actual', data: categoryRows.map(r => r.actual || 0), backgroundColor: '#D4A017' }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+        plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: c => `${c.dataset.label}: ${fmt(c.parsed.x)}` } } },
+        scales: { x: { ticks: { callback: v => '$' + (v/1000).toFixed(0) + 'K' } } }
+      }
+    });
+
+    // ---- HISTORY LIST ----
+    document.getElementById('historyList').innerHTML = history.length === 0
+      ? '<p style="color:var(--text-light); font-size:13px;">No changes yet.</p>'
+      : history.map(h => {
+          const delta = h.delta || 0;
+          const sign = delta > 0 ? '+' : '';
+          const color = delta > 0 ? 'var(--red)' : (delta < 0 ? 'var(--green)' : 'var(--text-soft)');
+          const date = new Date(h.changed_at).toLocaleDateString();
+          return `<div style="padding:8px 0; border-bottom:1px solid var(--border); font-size:13px;">
+            <div style="font-weight:600;">${h.item_name || '?'} <span style="font-size:11px; color:var(--text-light); font-weight:normal;">${h.field_name}</span></div>
+            <div style="color:var(--text-soft);">${date} · ${h.old_value || '0'} → ${h.new_value || '0'} <span style="color:${color}; font-weight:600;">(${sign}${fmt(delta)})</span></div>
+          </div>`;
+        }).join('');
+
+    // ---- LINE ITEM TABLE ----
+    document.getElementById('itemsTbody').innerHTML = items.filter(i => !i.is_included).map(it => {
+      const d = (it.actual_amount || 0) - it.planned_amount;
+      const delta = it.actual_amount == null ? '—' : (d >= 0 ? '+' : '') + fmt(d);
+      const dCol = d > 0 ? 'var(--red)' : (d < 0 ? 'var(--green)' : 'var(--text-soft)');
+      return `<tr>
+        <td><strong>${it.category}</strong></td>
+        <td>${it.name}</td>
+        <td class="amount">${fmt(it.planned_amount || 0)}</td>
+        <td class="amount">${fmtAuto(it.actual_amount)}</td>
+        <td class="amount" style="color:${dCol};">${delta}</td>
+        <td style="color:var(--text-soft); font-size:13px;">${it.vendor || '—'}</td>
+        <td style="color:var(--text-soft); font-size:13px;">${it.date_paid || '—'}</td>
+      </tr>`;
+    }).join('');
+
+  } catch (ex) {
+    console.error('Failed to load:', ex);
+    document.querySelector('.container').innerHTML = `<div class="card"><h2>Couldn't load data</h2><p style="color:var(--red);">${ex.message}</p></div>`;
+  }
+}
+
+loadEvolution();
+</script>
+</body>
+</html>

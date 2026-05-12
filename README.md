@@ -3,24 +3,40 @@
 Personal tracker for our Diyanni Harbor Spring custom build in Xenia Township, Ohio.
 
 🌐 **Live:** [xeniabuild.com](https://xeniabuild.com)
+🗄 **Backend:** Supabase (Postgres + Auth)
 
 ## Pages
 
+**Public (anyone can view):**
 - **Overview** (`/`) — Hero, key stats, project dashboard
 - **Gallery** (`/gallery`) — Photos of the Harbor Spring (filterable by room)
 - **Floor Plan** (`/floor-plan`) — 1st & 2nd floor plans + 3 elevations
 - **Features** (`/features`) — Gold Package standard features + full brochure
-- **Budget** (`/budget`) — Live budget calculator + mortgage estimator
+- **Budget** (`/budget`) — Live budget with sliders + mortgage calc
+- **Evolution** (`/evolution`) — Planned vs actual + budget changes over time
 - **Timeline** (`/timeline`) — Project schedule from survey through move-in
-- **Decisions** (`/decisions`) — Decision tracker (persists in your browser)
+- **Decisions** (`/decisions`) — Decision tracker
+
+**Admin (requires sign-in):**
+- **Admin** (`/admin`) — Edit budget, timeline, decisions, journal entries
 
 ## Stack
 
-- Static HTML/CSS/JS — no build step needed
-- Chart.js (CDN) for budget visualization
-- Google Fonts: Inter + Playfair Display
-- Mobile-first responsive
-- localStorage for decision persistence
+- Static HTML/CSS/JS hosted on **Vercel** — no build step
+- **Supabase** (Postgres) for data persistence + auth
+- **Chart.js** for evolution charts
+- Mobile-first responsive design
+- Falls back to hardcoded data when Supabase isn't configured
+
+## Setting Up Supabase
+
+See **[supabase/SETUP.md](supabase/SETUP.md)** for step-by-step instructions:
+1. Create free Supabase project
+2. Run `supabase/schema.sql` (creates tables, triggers, RLS policies)
+3. Run `supabase/seed.sql` (initial data)
+4. Add your Project URL + anon key to `js/config.js`
+5. Create your admin user in Supabase dashboard
+6. Disable public signups (only you can write)
 
 ## Deploy to xeniabuild.com (Vercel)
 

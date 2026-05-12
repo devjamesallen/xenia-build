@@ -8,6 +8,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
 <script src="js/meta.js"></script>
 </head>
 <body data-page="decisions">
@@ -85,6 +88,30 @@
 <script>
 let filter = 'all';
 let state = STORAGE.get('decisions', {});
+let decisions = HOME.decisions; // default to static; replaced from DB if available
+
+async function hydrateDecisions() {
+  if (!window.DB) return;
+  try {
+    const rows = await DB.getDecisions();
+    if (rows.length) {
+      decisions = rows.map(r => ({
+        id: r.slug || ('d' + r.id),
+        category: r.category,
+        title: r.title,
+        due: r.due_date ? new Date(r.due_date).toLocaleDateString('en-US', {month:'short', year:'numeric'}) : '',
+        priority: r.priority
+      }));
+      // Map DB status to local state
+      rows.forEach(r => {
+        const k = r.slug || ('d' + r.id);
+        state[k] = state[k] || {};
+        if (r.status === 'done') state[k].done = true;
+        if (r.notes) state[k].note = r.notes;
+      });
+    }
+  } catch (e) { console.warn('DB decisions fetch failed, using static:', e); }
+}
 
 function priorityBadge(p) {
   if (p === 'high') return '<span class="badge badge-red">High</span>';
@@ -93,7 +120,7 @@ function priorityBadge(p) {
 }
 
 function render() {
-  const filtered = HOME.decisions.filter(d => {
+  const filtered = decisions.filter(d => {
     const s = state[d.id] || {};
     if (filter === 'all') return true;
     if (filter === 'pending') return !s.done;
@@ -167,8 +194,8 @@ window.toggleNote = function(id) {
 };
 
 function updateStats() {
-  const total = HOME.decisions.length;
-  const done = HOME.decisions.filter(d => state[d.id] && state[d.id].done).length;
+  const total = decisions.length;
+  const done = decisions.filter(d => state[d.id] && state[d.id].done).length;
   const pending = total - done;
   const pct = Math.round((done / total) * 100);
   document.getElementById('totalCount').textContent = total;
@@ -192,7 +219,7 @@ document.querySelectorAll('[data-filter]').forEach(btn => {
 });
 
 document.getElementById('exportBtn').addEventListener('click', () => {
-  const text = HOME.decisions.map(d => {
+  const text = decisions.map(d => {
     const s = state[d.id] || {};
     return `[${s.done ? 'X' : ' '}] (${d.priority}) ${d.category}: ${d.title} (due ${d.due})${s.note ? '\n    Note: ' + s.note : ''}`;
   }).join('\n');
@@ -216,8 +243,11 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   }
 });
 
-updateStats();
-render();
+(async () => {
+  await hydrateDecisions();
+  updateStats();
+  render();
+})();
 </script>
 </body>
 </html>

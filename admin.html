@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin · Xenia Home Build</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
+<script src="js/meta.js"></script>
+<style>
+  .admin-table { font-size: 13px; }
+  .admin-table input, .admin-table select { padding: 6px 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; font-family: inherit; }
+  .admin-table input[type=number] { text-align: right; width: 100px; }
+  .admin-table input[type=text] { width: 100%; min-width: 140px; }
+  .admin-table .delta-pos { color: var(--red); }
+  .admin-table .delta-neg { color: var(--green); }
+  .tab-buttons { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+  .tab-button { padding: 10px 18px; border: none; background: transparent; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--text-soft); border-bottom: 3px solid transparent; transition: all 0.15s; }
+  .tab-button.active { color: var(--primary); border-bottom-color: var(--primary); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .login-form { max-width: 400px; margin: 64px auto; }
+</style>
+</head>
+<body data-page="admin">
+
+<div id="nav-placeholder"></div>
+
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">Admin</span>
+    <h1>Build Manager</h1>
+    <p id="adminSubtitle">Edit budget, timeline, decisions, and journal entries.</p>
+  </div>
+</section>
+
+<!-- LOGIN FORM (shown when not authenticated) -->
+<section id="loginSection" style="padding: 0 0 64px;">
+  <div class="container">
+    <div class="card login-form">
+      <h2>Sign In</h2>
+      <p style="color:var(--text-soft); font-size:14px; margin-bottom:20px;">Only signed-in users can edit. Public site visitors can still view all data.</p>
+      <form id="loginForm">
+        <div class="input-group mb-2">
+          <label>Email</label>
+          <input type="email" id="email" required>
+        </div>
+        <div class="input-group mb-2">
+          <label>Password</label>
+          <input type="password" id="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-full">Sign In</button>
+        <p id="loginError" style="color:var(--red); font-size:13px; margin-top:8px; display:none;"></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ADMIN PANEL (shown when authenticated) -->
+<section id="adminPanel" style="padding: 0 0 64px; display:none;">
+  <div class="container">
+
+    <div class="flex justify-between items-center mb-3">
+      <div>
+        <span style="font-size:13px; color:var(--text-light);">Signed in as <strong id="userEmail"></strong></span>
+      </div>
+      <div class="flex gap-1">
+        <button class="btn btn-outline" id="snapshotBtn">📸 Take Budget Snapshot</button>
+        <button class="btn btn-ghost" id="signOutBtn">Sign out</button>
+      </div>
+    </div>
+
+    <div class="tab-buttons">
+      <button class="tab-button active" data-tab="budget">Budget</button>
+      <button class="tab-button" data-tab="timeline">Timeline</button>
+      <button class="tab-button" data-tab="decisions">Decisions</button>
+      <button class="tab-button" data-tab="journal">Journal</button>
+      <button class="tab-button" data-tab="settings">Settings</button>
+    </div>
+
+    <!-- BUDGET TAB -->
+    <div class="tab-content active" id="tab-budget">
+      <div class="flex justify-between items-center mb-2">
+        <h2 style="color:var(--primary);">Budget Items</h2>
+        <button class="btn btn-primary" id="addBudgetBtn">+ Add Line Item</button>
+      </div>
+      <div style="overflow-x: auto;">
+        <table class="table admin-table" id="budgetTable">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Name</th>
+              <th>Planned</th>
+              <th>Actual</th>
+              <th>Δ</th>
+              <th>Vendor</th>
+              <th>Paid Date</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="budgetTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TIMELINE TAB -->
+    <div class="tab-content" id="tab-timeline">
+      <div class="flex justify-between items-center mb-2">
+        <h2 style="color:var(--primary);">Timeline Events</h2>
+        <button class="btn btn-primary" id="addTimelineBtn">+ Add Event</button>
+      </div>
+      <div id="timelineList" class="decision-list"></div>
+    </div>
+
+    <!-- DECISIONS TAB -->
+    <div class="tab-content" id="tab-decisions">
+      <div class="flex justify-between items-center mb-2">
+        <h2 style="color:var(--primary);">Decisions</h2>
+        <button class="btn btn-primary" id="addDecisionBtn">+ Add Decision</button>
+      </div>
+      <div id="decisionsList" class="decision-list"></div>
+    </div>
+
+    <!-- JOURNAL TAB -->
+    <div class="tab-content" id="tab-journal">
+      <h2 style="color:var(--primary);">Journal</h2>
+      <p style="color:var(--text-soft); font-size:14px; margin-bottom:16px;">Quick notes from meetings, calls, quotes, and milestones.</p>
+      <div class="card mb-3">
+        <h3>New Entry</h3>
+        <form id="journalForm">
+          <div class="grid grid-2 mb-2">
+            <div class="input-group">
+              <label>Date</label>
+              <input type="date" id="journalDate" value="">
+            </div>
+            <div class="input-group">
+              <label>Category</label>
+              <select id="journalCategory">
+                <option>note</option>
+                <option>meeting</option>
+                <option>quote</option>
+                <option>milestone</option>
+              </select>
+            </div>
+          </div>
+          <div class="input-group mb-2">
+            <label>Title</label>
+            <input type="text" id="journalTitle" required>
+          </div>
+          <div class="input-group mb-2">
+            <label>Body</label>
+            <textarea id="journalBody" rows="4" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; font-family:inherit;"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Add Entry</button>
+        </form>
+      </div>
+      <div id="journalList"></div>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div class="tab-content" id="tab-settings">
+      <h2 style="color:var(--primary);">Build Settings</h2>
+      <div class="card">
+        <form id="settingsForm">
+          <div class="grid grid-2 mb-2">
+            <div class="input-group">
+              <label>Target Budget ($)</label>
+              <input type="number" id="targetBudget">
+            </div>
+            <div class="input-group">
+              <label>Square Feet</label>
+              <input type="number" id="squareFeet">
+            </div>
+            <div class="input-group">
+              <label>Base Price ($)</label>
+              <input type="number" id="basePrice">
+            </div>
+            <div class="input-group">
+              <label>Elevation B Upgrade ($)</label>
+              <input type="number" id="elevationB">
+            </div>
+            <div class="input-group">
+              <label>Contingency %</label>
+              <input type="number" id="contingencyPct" step="0.01" min="0" max="0.3">
+            </div>
+            <div class="input-group">
+              <label>Loan Costs ($)</label>
+              <input type="number" id="loanCosts">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Save Settings</button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+// ---------------- AUTH ----------------
+async function refreshAuthState() {
+  if (!window.DB) {
+    document.getElementById('loginSection').innerHTML = `
+      <div class="container"><div class="card login-form">
+        <h2>Supabase Not Configured</h2>
+        <p style="color:var(--text-soft); font-size:14px;">Edit <code>js/config.js</code> and add your Supabase URL + anon key, then re-deploy. See <a href="https://github.com/devjamesallen/xenia-build#setting-up-supabase" target="_blank">README</a>.</p>
+      </div></div>`;
+    return;
+  }
+  const user = await DB.getUser();
+  if (user) {
+    document.getElementById('loginSection').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    document.getElementById('userEmail').textContent = user.email;
+    loadAll();
+  } else {
+    document.getElementById('loginSection').style.display = 'block';
+    document.getElementById('adminPanel').style.display = 'none';
+  }
+}
+
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const err = document.getElementById('loginError');
+  err.style.display = 'none';
+  try {
+    const { error } = await DB.signIn(
+      document.getElementById('email').value,
+      document.getElementById('password').value
+    );
+    if (error) throw error;
+    refreshAuthState();
+  } catch (ex) {
+    err.textContent = ex.message;
+    err.style.display = 'block';
+  }
+});
+
+document.getElementById('signOutBtn').addEventListener('click', async () => {
+  await DB.signOut();
+  refreshAuthState();
+});
+
+// ---------------- TABS ----------------
+document.querySelectorAll('.tab-button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ---------------- BUDGET ----------------
+async function loadBudget() {
+  const items = await DB.getBudgetItems();
+  const tbody = document.getElementById('budgetTbody');
+  tbody.innerHTML = items.map(it => {
+    const delta = (it.actual_amount || 0) - it.planned_amount;
+    const deltaClass = delta > 0 ? 'delta-pos' : (delta < 0 ? 'delta-neg' : '');
+    const deltaStr = delta === 0 || it.actual_amount == null ? '-' : (delta > 0 ? '+' : '') + fmt(delta);
+    return `<tr data-id="${it.id}">
+      <td><input type="text" value="${it.category}" data-field="category"></td>
+      <td><input type="text" value="${it.name}" data-field="name"></td>
+      <td><input type="number" value="${it.planned_amount || 0}" data-field="planned_amount"></td>
+      <td><input type="number" value="${it.actual_amount ?? ''}" placeholder="—" data-field="actual_amount"></td>
+      <td class="${deltaClass}">${deltaStr}</td>
+      <td><input type="text" value="${it.vendor || ''}" placeholder="—" data-field="vendor"></td>
+      <td><input type="date" value="${it.date_paid || ''}" data-field="date_paid"></td>
+      <td><button class="btn btn-ghost" onclick="deleteBudget(${it.id})" style="padding:4px 8px;">🗑</button></td>
+    </tr>`;
+  }).join('');
+  // Attach change handlers
+  tbody.querySelectorAll('input').forEach(input => {
+    input.addEventListener('change', async (e) => {
+      const tr = e.target.closest('tr');
+      const id = +tr.dataset.id;
+      const field = e.target.dataset.field;
+      let value = e.target.value;
+      if (field === 'planned_amount' || field === 'actual_amount') value = value === '' ? null : +value;
+      if (field === 'date_paid' && !value) value = null;
+      try {
+        await DB.updateBudgetItem(id, { [field]: value });
+        loadBudget(); // refresh to show new delta
+      } catch (ex) {
+        alert('Update failed: ' + ex.message);
+      }
+    });
+  });
+}
+
+window.deleteBudget = async function(id) {
+  if (!confirm('Remove this budget item?')) return;
+  try { await DB.deleteBudgetItem(id); loadBudget(); }
+  catch (ex) { alert('Delete failed: ' + ex.message); }
+};
+
+document.getElementById('addBudgetBtn').addEventListener('click', async () => {
+  const category = prompt('Category (e.g. "Upgrades", "Site Work"):');
+  if (!category) return;
+  const name = prompt('Item name:');
+  if (!name) return;
+  const planned = parseInt(prompt('Planned amount ($):', '0')) || 0;
+  try {
+    await DB.createBudgetItem({ category, name, planned_amount: planned, sort_order: 99 });
+    loadBudget();
+  } catch (ex) { alert('Failed to create: ' + ex.message); }
+});
+
+document.getElementById('snapshotBtn').addEventListener('click', async () => {
+  const note = prompt('Snapshot note (optional):', '');
+  try {
+    await DB.createSnapshot(note || '');
+    alert('Snapshot saved! View it on the Evolution page.');
+  } catch (ex) { alert('Snapshot failed: ' + ex.message); }
+});
+
+// ---------------- TIMELINE ----------------
+async function loadTimeline() {
+  const events = await DB.getTimeline();
+  document.getElementById('timelineList').innerHTML = events.map(ev => `
+    <div class="card mb-1" data-id="${ev.id}" style="display:grid; grid-template-columns: 140px 1fr 1fr 120px auto; gap:8px; align-items:center;">
+      <input type="text" value="${ev.date_label}" data-field="date_label" placeholder="Date label">
+      <input type="text" value="${ev.title}" data-field="title" placeholder="Title">
+      <input type="text" value="${ev.description || ''}" data-field="description" placeholder="Description">
+      <select data-field="status">
+        <option ${ev.status==='planned'?'selected':''}>planned</option>
+        <option ${ev.status==='current'?'selected':''}>current</option>
+        <option ${ev.status==='done'?'selected':''}>done</option>
+        <option ${ev.status==='delayed'?'selected':''}>delayed</option>
+      </select>
+      <button class="btn btn-ghost" onclick="deleteTimeline(${ev.id})">🗑</button>
+    </div>
+  `).join('');
+  document.querySelectorAll('#timelineList input, #timelineList select').forEach(el => {
+    el.addEventListener('change', async (e) => {
+      const card = e.target.closest('[data-id]');
+      const id = +card.dataset.id;
+      const field = e.target.dataset.field;
+      try { await DB.updateTimelineEvent(id, { [field]: e.target.value }); }
+      catch (ex) { alert('Update failed: ' + ex.message); }
+    });
+  });
+}
+window.deleteTimeline = async function(id) {
+  if (!confirm('Delete this event?')) return;
+  await DB.deleteTimelineEvent(id); loadTimeline();
+};
+document.getElementById('addTimelineBtn').addEventListener('click', async () => {
+  const title = prompt('Event title:');
+  if (!title) return;
+  const date_label = prompt('Date label (e.g. "June 2026"):', '');
+  await DB.createTimelineEvent({ title, date_label, status: 'planned', sort_order: 999 });
+  loadTimeline();
+});
+
+// ---------------- DECISIONS ----------------
+async function loadDecisions() {
+  const decs = await DB.getDecisions();
+  document.getElementById('decisionsList').innerHTML = decs.map(d => `
+    <div class="card mb-1" data-id="${d.id}" style="display:grid; grid-template-columns: 140px 1fr 1fr 100px 100px auto; gap:8px; align-items:center;">
+      <input type="text" value="${d.category}" data-field="category" placeholder="Category">
+      <input type="text" value="${d.title}" data-field="title" placeholder="Title">
+      <input type="text" value="${d.decision || ''}" data-field="decision" placeholder="Decision made (optional)">
+      <select data-field="priority">
+        <option ${d.priority==='high'?'selected':''}>high</option>
+        <option ${d.priority==='med'?'selected':''}>med</option>
+        <option ${d.priority==='low'?'selected':''}>low</option>
+      </select>
+      <select data-field="status">
+        <option ${d.status==='pending'?'selected':''}>pending</option>
+        <option ${d.status==='in_progress'?'selected':''}>in_progress</option>
+        <option ${d.status==='done'?'selected':''}>done</option>
+      </select>
+      <button class="btn btn-ghost" onclick="deleteDecision(${d.id})">🗑</button>
+    </div>
+  `).join('');
+  document.querySelectorAll('#decisionsList input, #decisionsList select').forEach(el => {
+    el.addEventListener('change', async (e) => {
+      const card = e.target.closest('[data-id]');
+      const id = +card.dataset.id;
+      const field = e.target.dataset.field;
+      try { await DB.updateDecision(id, { [field]: e.target.value }); }
+      catch (ex) { alert('Update failed: ' + ex.message); }
+    });
+  });
+}
+window.deleteDecision = async function(id) {
+  if (!confirm('Delete this decision?')) return;
+  await DB.deleteDecision(id); loadDecisions();
+};
+document.getElementById('addDecisionBtn').addEventListener('click', async () => {
+  const category = prompt('Category:'); if (!category) return;
+  const title = prompt('Decision title:'); if (!title) return;
+  await DB.createDecision({ category, title, priority: 'med', status: 'pending', sort_order: 999 });
+  loadDecisions();
+});
+
+// ---------------- JOURNAL ----------------
+async function loadJournal() {
+  const entries = await DB.getJournal();
+  document.getElementById('journalList').innerHTML = entries.map(e => `
+    <div class="card mb-1">
+      <div class="flex justify-between" style="margin-bottom:6px;">
+        <strong>${e.title}</strong>
+        <span style="font-size:12px; color:var(--text-light);">${e.entry_date} · ${e.category || 'note'}</span>
+      </div>
+      <p style="font-size:14px; color:var(--text-soft); white-space:pre-wrap;">${e.body || ''}</p>
+    </div>
+  `).join('') || '<p style="color:var(--text-light);">No journal entries yet.</p>';
+}
+document.getElementById('journalDate').value = new Date().toISOString().slice(0,10);
+document.getElementById('journalForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  try {
+    await DB.createJournalEntry({
+      entry_date: document.getElementById('journalDate').value,
+      title: document.getElementById('journalTitle').value,
+      body: document.getElementById('journalBody').value,
+      category: document.getElementById('journalCategory').value
+    });
+    document.getElementById('journalForm').reset();
+    document.getElementById('journalDate').value = new Date().toISOString().slice(0,10);
+    loadJournal();
+  } catch (ex) { alert('Failed: ' + ex.message); }
+});
+
+// ---------------- SETTINGS ----------------
+async function loadSettings() {
+  const s = await DB.getBudgetSettings();
+  document.getElementById('targetBudget').value = s.target_budget;
+  document.getElementById('squareFeet').value = s.square_feet;
+  document.getElementById('basePrice').value = s.base_price;
+  document.getElementById('elevationB').value = s.elevation_b;
+  document.getElementById('contingencyPct').value = s.contingency_pct;
+  document.getElementById('loanCosts').value = s.loan_costs;
+}
+document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  try {
+    await DB.updateBudgetSettings({
+      target_budget: +document.getElementById('targetBudget').value,
+      square_feet: +document.getElementById('squareFeet').value,
+      base_price: +document.getElementById('basePrice').value,
+      elevation_b: +document.getElementById('elevationB').value,
+      contingency_pct: +document.getElementById('contingencyPct').value,
+      loan_costs: +document.getElementById('loanCosts').value
+    });
+    alert('Settings saved!');
+  } catch (ex) { alert('Save failed: ' + ex.message); }
+});
+
+async function loadAll() {
+  try {
+    await Promise.all([loadBudget(), loadTimeline(), loadDecisions(), loadJournal(), loadSettings()]);
+  } catch (ex) {
+    console.error('Load failed:', ex);
+    alert('Some data failed to load. Check console for details.');
+  }
+}
+
+refreshAuthState();
+</script>
+</body>
+</html>

@@ -8,6 +8,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
 <script src="js/meta.js"></script>
 </head>
 <body data-page="timeline">
@@ -104,20 +107,29 @@
 <script src="js/data.js"></script>
 <script src="js/app.js"></script>
 <script>
-const tl = document.getElementById('timeline');
-tl.innerHTML = HOME.timeline.map(t => `
-  <div class="timeline-item ${t.status}">
-    <div class="timeline-date">${t.date}</div>
-    <div class="timeline-title">${t.title}</div>
-    <div class="timeline-desc">${t.desc}</div>
-  </div>
-`).join('');
-
-const current = HOME.timeline.find(t => t.status === 'current');
-if (current) {
-  document.getElementById('currentStep').textContent = current.title;
-  document.getElementById('currentDesc').textContent = current.desc + ' — ' + current.date;
+async function loadTimeline() {
+  let events = HOME.timeline.map(t => ({ date_label: t.date, title: t.title, description: t.desc, status: t.status }));
+  if (window.DB) {
+    try {
+      const rows = await DB.getTimeline();
+      events = rows.map(r => ({ date_label: r.date_label, title: r.title, description: r.description, status: r.status }));
+    } catch (e) { console.warn('DB timeline fetch failed, using static:', e); }
+  }
+  const tl = document.getElementById('timeline');
+  tl.innerHTML = events.map(t => `
+    <div class="timeline-item ${t.status}">
+      <div class="timeline-date">${t.date_label}</div>
+      <div class="timeline-title">${t.title}</div>
+      <div class="timeline-desc">${t.description || ''}</div>
+    </div>
+  `).join('');
+  const current = events.find(t => t.status === 'current');
+  if (current) {
+    document.getElementById('currentStep').textContent = current.title;
+    document.getElementById('currentDesc').textContent = (current.description || '') + ' — ' + current.date_label;
+  }
 }
+loadTimeline();
 </script>
 </body>
 </html>

@@ -2,6 +2,12 @@
 // Edit these values as your numbers firm up; the site recalculates automatically.
 
 window.HOME = {
+  // ---------- DECISION ----------
+  // Plan locked in May 2026 after evaluating 11 plans across 6 builders.
+  // See why.html for the full decision rationale.
+  decisionDate: "2026-05-12",
+  decisionStatus: "confirmed",
+
   // ---------- PLAN BASICS ----------
   plan: "The Harbor Spring",
   builder: "Diyanni Custom Homes",

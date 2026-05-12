@@ -81,6 +81,7 @@ function renderNav(activePage = '') {
       </button>
       <ul class="nav-links">
         <li><a href="index.html" data-page="home" class="${activePage==='home'?'active':''}">Overview</a></li>
+        <li><a href="why.html" data-page="why" class="${activePage==='why'?'active':''}">Why</a></li>
         <li><a href="gallery.html" data-page="gallery" class="${activePage==='gallery'?'active':''}">Gallery</a></li>
         <li><a href="floor-plan.html" data-page="floorplan" class="${activePage==='floorplan'?'active':''}">Floor Plan</a></li>
         <li><a href="features.html" data-page="features" class="${activePage==='features'?'active':''}">Features</a></li>

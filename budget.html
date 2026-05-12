@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Budget · Xenia Home Build</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="js/meta.js"></script>
+</head>
+<body data-page="budget">
+
+<div id="nav-placeholder"></div>
+
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">Cost Breakdown</span>
+    <h1>Project Budget</h1>
+    <p>Live, adjustable estimate for the Harbor Spring build in Xenia, OH.</p>
+  </div>
+</section>
+
+<!-- Top summary -->
+<section style="padding: 0 0 32px;">
+  <div class="container">
+    <div class="grid grid-3">
+      <div class="card text-center">
+        <div class="card-title">Estimated Total</div>
+        <div style="font-size:48px;font-weight:700;font-family:var(--font-display);color:var(--primary);" id="totalDisplay">$0</div>
+        <p style="color:var(--text-light);font-size:13px;" id="psfDisplay">$0 / SF</p>
+        <div style="margin-top:16px;" id="statusBadge"></div>
+      </div>
+      <div class="card text-center">
+        <div class="card-title">Target Budget</div>
+        <div style="font-size:48px;font-weight:700;font-family:var(--font-display);color:var(--text);" id="targetDisplay">$750,000</div>
+        <p style="color:var(--text-light);font-size:13px;">All-in budget cap</p>
+      </div>
+      <div class="card text-center">
+        <div class="card-title">Monthly P&I (20% down, 30yr)</div>
+        <div style="font-size:48px;font-weight:700;font-family:var(--font-display);color:var(--primary);" id="monthlyDisplay">$0</div>
+        <p style="color:var(--text-light);font-size:13px;" id="pitiDisplay">+ tax/ins ≈ $0/mo PITI</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Sliders + Chart -->
+<section style="padding: 0 0 48px;">
+  <div class="container">
+    <div class="grid grid-2">
+      <div class="card">
+        <h2>Adjust Scenarios</h2>
+        <p style="color:var(--text-soft);font-size:14px;margin-bottom:16px;">Move the sliders to see how each lever impacts the total. Try lowering land cost or upgrades to hit your $750K target.</p>
+
+        <div class="slider-row">
+          <label>Land cost</label>
+          <input type="range" id="landSlider" min="60000" max="150000" step="5000" value="100000">
+          <div class="slider-val" id="landVal">$100,000</div>
+        </div>
+        <div class="slider-row">
+          <label>Contingency %</label>
+          <input type="range" id="contSlider" min="5" max="15" step="1" value="10">
+          <div class="slider-val" id="contVal">10%</div>
+        </div>
+        <div class="slider-row">
+          <label>Upgrades total</label>
+          <input type="range" id="upSlider" min="10000" max="60000" step="1000" value="29000">
+          <div class="slider-val" id="upVal">$29,000</div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:24px 0;">
+        <h3>Mortgage Calculator</h3>
+        <div class="grid grid-2 mt-2">
+          <div class="input-group">
+            <label>Down Payment %</label>
+            <input type="number" id="downPct" value="20" min="0" max="100">
+          </div>
+          <div class="input-group">
+            <label>Interest Rate %</label>
+            <input type="number" id="rate" value="6.75" step="0.125">
+          </div>
+          <div class="input-group">
+            <label>Loan Term (yrs)</label>
+            <input type="number" id="term" value="30">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Visual Breakdown</h2>
+        <div class="chart-container"><canvas id="budgetChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Itemized -->
+<section style="padding: 0 0 64px;">
+  <div class="container">
+    <h2 style="font-size:32px;color:var(--primary);margin-bottom:16px;">Line-by-Line Estimate</h2>
+    <table class="table" id="budgetTable">
+      <thead>
+        <tr><th>Category</th><th>Item</th><th>Notes</th><th class="amount">Amount</th></tr>
+      </thead>
+      <tbody id="budgetBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+let chart;
+function getOverrides() {
+  return {
+    land: +document.getElementById('landSlider').value,
+    contingencyPct: +document.getElementById('contSlider').value / 100,
+    upgrades: +document.getElementById('upSlider').value
+  };
+}
+
+function renderTable(o) {
+  const b = HOME.budget;
+  const rows = [];
+  rows.push(['Base Home', 'Harbor Spring Base Price (Xenia, OH)', '', b.base.basePrice]);
+  rows.push(['', 'Elevation B Upgrade', 'Premium porch, metal roof accents, stone', b.base.elevationB]);
+  // upgrades - scaled
+  const upTotal = b.upgrades.reduce((s,u) => s + u.amount, 0);
+  const scale = upTotal > 0 ? o.upgrades / upTotal : 1;
+  b.upgrades.forEach((u, i) => {
+    rows.push([i === 0 ? 'Upgrades' : '', u.name, u.note, u.included ? 'Included' : Math.round(u.amount * scale)]);
+  });
+  b.customizations.forEach((c, i) => {
+    rows.push([i === 0 ? 'Customizations' : '', c.name, c.note, c.amount]);
+  });
+  // site work
+  const siteList = [...b.siteWork];
+  siteList[0] = {...siteList[0], amount: o.land};
+  siteList.forEach((sw, i) => {
+    rows.push([i === 0 ? 'Site Work' : '', sw.name, sw.note, sw.amount]);
+  });
+  // contingency
+  const constr = b.base.basePrice + b.base.elevationB + o.upgrades + b.customizations.reduce((s,c) => s + c.amount, 0);
+  const cont = Math.round(constr * o.contingencyPct);
+  rows.push(['Contingency & Loan', `Contingency (${(o.contingencyPct*100).toFixed(0)}% of construction)`, 'For unexpected costs during build', cont]);
+  rows.push(['', 'Construction Loan Costs', 'Interest, origination, appraisal, closing', b.loanCosts]);
+
+  // total
+  const totalRow = calcBudget(o);
+  document.getElementById('budgetBody').innerHTML = rows.map(r => `
+    <tr><td><strong>${r[0]}</strong></td><td>${r[1]}</td><td style="color:var(--text-light);font-size:13px;">${r[2]}</td><td class="amount">${typeof r[3] === 'number' ? fmt(r[3]) : `<span class="text-green">${r[3]}</span>`}</td></tr>
+  `).join('') + `
+    <tr class="total"><td colspan="3">ESTIMATED TOTAL</td><td class="amount">${fmt(totalRow.total)}</td></tr>
+    <tr><td colspan="3" style="color:var(--text-light);">Cost per square foot (${HOME.sqft.toLocaleString()} SF)</td><td class="amount">${fmt(totalRow.psf)} / SF</td></tr>
+  `;
+}
+
+function recalc() {
+  const o = getOverrides();
+  const b = calcBudget(o);
+
+  document.getElementById('landVal').textContent = fmt(o.land);
+  document.getElementById('contVal').textContent = `${(o.contingencyPct*100).toFixed(0)}%`;
+  document.getElementById('upVal').textContent = fmt(o.upgrades);
+
+  document.getElementById('totalDisplay').textContent = fmt(b.total);
+  document.getElementById('psfDisplay').textContent = `${fmt(b.psf)} / SF`;
+  document.getElementById('targetDisplay').textContent = fmt(HOME.budget.target);
+
+  // Status badge
+  const statusEl = document.getElementById('statusBadge');
+  if (b.diff > 5000) statusEl.innerHTML = `<span class="badge badge-red">${fmt(b.diff)} OVER TARGET</span>`;
+  else if (b.diff < -5000) statusEl.innerHTML = `<span class="badge badge-green">${fmt(-b.diff)} UNDER TARGET</span>`;
+  else statusEl.innerHTML = `<span class="badge badge-accent">ON TARGET</span>`;
+
+  // Mortgage
+  const downPct = +document.getElementById('downPct').value;
+  const rate = +document.getElementById('rate').value;
+  const term = +document.getElementById('term').value;
+  const m = calcMortgage(b.total, downPct, rate, term);
+  document.getElementById('monthlyDisplay').textContent = fmt(m.monthly);
+  document.getElementById('pitiDisplay').textContent = `+ tax/ins ≈ ${fmt(m.piti)}/mo PITI`;
+
+  // Chart
+  const data = {
+    labels: ['Base Home + Elevation', 'Upgrades + Customs', 'Site Work', 'Contingency + Loan'],
+    datasets: [{
+      data: [b.baseHome, b.upgrades + b.customs, b.siteWork, b.contingency + b.loanCosts],
+      backgroundColor: ['#1F4E78', '#2E75B6', '#5B9BD5', '#D4A017'],
+      borderWidth: 0
+    }]
+  };
+  if (chart) { chart.data = data; chart.update(); }
+  else {
+    chart = new Chart(document.getElementById('budgetChart'), {
+      type: 'doughnut',
+      data: data,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { font: { size: 12 }, boxWidth: 12, padding: 12 } },
+          tooltip: { callbacks: { label: c => `${c.label}: ${fmt(c.parsed)}` } }
+        },
+        cutout: '62%'
+      }
+    });
+  }
+
+  renderTable(o);
+}
+
+['landSlider','contSlider','upSlider','downPct','rate','term'].forEach(id => {
+  document.getElementById(id).addEventListener('input', recalc);
+});
+
+recalc();
+</script>
+</body>
+</html>

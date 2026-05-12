@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decisions · Xenia Home Build</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script src="js/meta.js"></script>
+</head>
+<body data-page="decisions">
+
+<div id="nav-placeholder"></div>
+
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">Decision Tracker</span>
+    <h1>Choices to Make</h1>
+    <p>Every selection that needs a decision before / during build. Check them off as you go.</p>
+  </div>
+</section>
+
+<!-- Summary -->
+<section style="padding: 0 0 32px;">
+  <div class="container">
+    <div class="grid grid-4">
+      <div class="card text-center">
+        <div class="card-title">Total</div>
+        <div style="font-size:36px;font-weight:700;font-family:var(--font-display);color:var(--primary);" id="totalCount">0</div>
+      </div>
+      <div class="card text-center">
+        <div class="card-title">Done</div>
+        <div style="font-size:36px;font-weight:700;font-family:var(--font-display);color:var(--green);" id="doneCount">0</div>
+      </div>
+      <div class="card text-center">
+        <div class="card-title">Pending</div>
+        <div style="font-size:36px;font-weight:700;font-family:var(--font-display);color:var(--accent);" id="pendingCount">0</div>
+      </div>
+      <div class="card text-center">
+        <div class="card-title">Progress</div>
+        <div style="font-size:36px;font-weight:700;font-family:var(--font-display);color:var(--primary);" id="progressPct">0%</div>
+      </div>
+    </div>
+    <div class="card mt-3" style="padding:12px 20px;">
+      <div style="background:var(--border);border-radius:100px;height:8px;overflow:hidden;">
+        <div id="progressBar" style="background:linear-gradient(to right,var(--accent),var(--primary));height:100%;width:0%;transition:width 0.3s;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Filter buttons -->
+<section style="padding: 0 0 24px;">
+  <div class="container">
+    <div class="flex gap-1" style="flex-wrap:wrap; justify-content:center;">
+      <button class="btn btn-primary" data-filter="all">All</button>
+      <button class="btn btn-ghost" data-filter="pending">Pending</button>
+      <button class="btn btn-ghost" data-filter="done">Completed</button>
+      <button class="btn btn-ghost" data-filter="high">High Priority</button>
+    </div>
+  </div>
+</section>
+
+<!-- Decisions by category -->
+<section style="padding: 0 0 48px;">
+  <div class="container">
+    <div id="decisionsByCategory"></div>
+  </div>
+</section>
+
+<!-- Export / Reset -->
+<section style="padding: 0 0 64px;">
+  <div class="container text-center">
+    <button class="btn btn-outline" id="exportBtn">📋 Export as Text</button>
+    <button class="btn btn-ghost" id="resetBtn">⟲ Reset All</button>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+let filter = 'all';
+let state = STORAGE.get('decisions', {});
+
+function priorityBadge(p) {
+  if (p === 'high') return '<span class="badge badge-red">High</span>';
+  if (p === 'med') return '<span class="badge badge-accent">Med</span>';
+  return '<span class="badge badge-primary">Low</span>';
+}
+
+function render() {
+  const filtered = HOME.decisions.filter(d => {
+    const s = state[d.id] || {};
+    if (filter === 'all') return true;
+    if (filter === 'pending') return !s.done;
+    if (filter === 'done') return s.done;
+    if (filter === 'high') return d.priority === 'high';
+    return true;
+  });
+
+  // Group by category
+  const byCategory = {};
+  filtered.forEach(d => {
+    if (!byCategory[d.category]) byCategory[d.category] = [];
+    byCategory[d.category].push(d);
+  });
+
+  document.getElementById('decisionsByCategory').innerHTML = Object.entries(byCategory).map(([cat, items]) => `
+    <div class="card mb-3">
+      <h2 style="display:flex;justify-content:space-between;align-items:center;">${cat} <span style="font-size:14px;color:var(--text-light);font-weight:400;font-family:var(--font-body);">${items.length} ${items.length === 1 ? 'decision' : 'decisions'}</span></h2>
+      <div class="decision-list">
+        ${items.map(d => {
+          const s = state[d.id] || {};
+          return `
+            <div class="decision ${s.done ? 'done' : ''}" data-id="${d.id}">
+              <input type="checkbox" class="decision-checkbox" data-id="${d.id}" ${s.done ? 'checked' : ''}>
+              <div class="decision-content">
+                <div class="decision-title">${d.title}</div>
+                <div class="decision-meta">
+                  ${priorityBadge(d.priority)}
+                  <span>Due: ${d.due}</span>
+                </div>
+                ${s.note ? `<div class="decision-note">${s.note}</div>` : ''}
+                <textarea class="decision-input" data-id="${d.id}" placeholder="Add a note..." style="width:100%;margin-top:8px;padding:8px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:13px;resize:vertical;min-height:32px;display:${s.note ? 'none' : 'none'};">${s.note || ''}</textarea>
+                <button class="btn btn-ghost" style="font-size:12px;padding:4px 10px;margin-top:6px;" onclick="toggleNote('${d.id}')">📝 ${s.note ? 'Edit note' : 'Add note'}</button>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  // attach checkbox handlers
+  document.querySelectorAll('.decision-checkbox').forEach(cb => {
+    cb.addEventListener('change', e => {
+      const id = e.target.dataset.id;
+      state[id] = state[id] || {};
+      state[id].done = e.target.checked;
+      STORAGE.set('decisions', state);
+      updateStats();
+      render();
+    });
+  });
+
+  document.querySelectorAll('.decision-input').forEach(ta => {
+    ta.addEventListener('change', e => {
+      const id = e.target.dataset.id;
+      state[id] = state[id] || {};
+      state[id].note = e.target.value;
+      STORAGE.set('decisions', state);
+      render();
+    });
+  });
+}
+
+window.toggleNote = function(id) {
+  const ta = document.querySelector(`.decision-input[data-id="${id}"]`);
+  if (ta) {
+    ta.style.display = ta.style.display === 'none' ? 'block' : 'none';
+    if (ta.style.display === 'block') ta.focus();
+  }
+};
+
+function updateStats() {
+  const total = HOME.decisions.length;
+  const done = HOME.decisions.filter(d => state[d.id] && state[d.id].done).length;
+  const pending = total - done;
+  const pct = Math.round((done / total) * 100);
+  document.getElementById('totalCount').textContent = total;
+  document.getElementById('doneCount').textContent = done;
+  document.getElementById('pendingCount').textContent = pending;
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+document.querySelectorAll('[data-filter]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-filter]').forEach(b => {
+      b.classList.add('btn-ghost');
+      b.classList.remove('btn-primary');
+    });
+    btn.classList.remove('btn-ghost');
+    btn.classList.add('btn-primary');
+    filter = btn.dataset.filter;
+    render();
+  });
+});
+
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const text = HOME.decisions.map(d => {
+    const s = state[d.id] || {};
+    return `[${s.done ? 'X' : ' '}] (${d.priority}) ${d.category}: ${d.title} (due ${d.due})${s.note ? '\n    Note: ' + s.note : ''}`;
+  }).join('\n');
+  navigator.clipboard.writeText('Xenia Home Build — Decisions\n' + '='.repeat(40) + '\n\n' + text)
+    .then(() => alert('Decisions copied to clipboard!'))
+    .catch(() => {
+      // fallback: download as file
+      const blob = new Blob([text], {type: 'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'decisions.txt'; a.click();
+    });
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (confirm('Reset all decision status and notes?')) {
+    state = {};
+    STORAGE.set('decisions', state);
+    updateStats();
+    render();
+  }
+});
+
+updateStats();
+render();
+</script>
+</body>
+</html>

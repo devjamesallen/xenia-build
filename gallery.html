@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery · Xenia Home Build</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script src="js/meta.js"></script>
+</head>
+<body data-page="gallery">
+
+<div id="nav-placeholder"></div>
+
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">Photo Gallery</span>
+    <h1>The Harbor Spring</h1>
+    <p>Photos from a completed Harbor Spring build — gives us a feel for what's coming.</p>
+  </div>
+</section>
+
+<!-- Section tabs -->
+<section style="padding: 0 0 24px;">
+  <div class="container">
+    <div class="flex gap-1" style="flex-wrap:wrap; justify-content:center;">
+      <button class="btn btn-ghost" data-tab="all">All</button>
+      <button class="btn btn-ghost" data-tab="exterior">Exterior</button>
+      <button class="btn btn-ghost" data-tab="livingAreas">Living Areas</button>
+      <button class="btn btn-ghost" data-tab="kitchen">Kitchen</button>
+      <button class="btn btn-ghost" data-tab="bedrooms">Bedrooms</button>
+      <button class="btn btn-ghost" data-tab="baths">Bathrooms</button>
+    </div>
+  </div>
+</section>
+
+<section style="padding-bottom: 64px;">
+  <div class="container">
+    <div id="gallery" class="gallery"></div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+function renderGallery(filter) {
+  const gallery = document.getElementById('gallery');
+  let items = [];
+  if (filter === 'all') {
+    Object.entries(HOME.gallery).forEach(([cat, arr]) => arr.forEach(item => items.push({...item, cat})));
+  } else {
+    items = HOME.gallery[filter] || [];
+  }
+  gallery.innerHTML = items.map(item => `
+    <div class="gallery-item">
+      <img src="${item.url}" alt="${item.caption}" loading="lazy">
+      <div class="gallery-caption">${item.caption}</div>
+    </div>
+  `).join('');
+  initLightbox();
+}
+
+document.querySelectorAll('[data-tab]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-tab]').forEach(b => b.classList.remove('btn-primary'));
+    document.querySelectorAll('[data-tab]').forEach(b => b.classList.add('btn-ghost'));
+    btn.classList.add('btn-primary');
+    btn.classList.remove('btn-ghost');
+    renderGallery(btn.dataset.tab);
+  });
+});
+document.querySelector('[data-tab="all"]').click();
+</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floor Plan · Xenia Home Build</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script src="js/meta.js"></script>
+</head>
+<body data-page="floorplan">
+
+<div id="nav-placeholder"></div>
+
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">Floor Plan</span>
+    <h1>The Harbor Spring Layout</h1>
+    <p>3,031 SF · 4 bedrooms · 2.5 bathrooms · 2 floors</p>
+  </div>
+</section>
+
+<section style="padding: 0 0 64px;">
+  <div class="container">
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Level 1</div>
+        <h2>First Floor</h2>
+        <p style="color:var(--text-soft);font-size:14px;margin-bottom:16px;">Open great room concept, kitchen with morning room, dedicated study, powder room, 3-car garage entry.</p>
+        <img id="lvl1" src="" alt="First floor plan" style="width:100%;border-radius:8px;cursor:pointer;background:#fff;">
+      </div>
+      <div class="card">
+        <div class="card-title">Level 2</div>
+        <h2>Second Floor</h2>
+        <p style="color:var(--text-soft);font-size:14px;margin-bottom:16px;">Master suite with walk-in closet, 3 secondary bedrooms, shared bath, game room/loft, laundry.</p>
+        <img id="lvl2" src="" alt="Second floor plan" style="width:100%;border-radius:8px;cursor:pointer;background:#fff;">
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <h2>Room Inventory</h2>
+      <div class="grid grid-2 mt-2">
+        <div>
+          <h3 style="color:var(--primary);">1st Floor</h3>
+          <ul style="list-style:none;padding-left:0;font-size:15px;line-height:2;">
+            <li>✓ Foyer</li>
+            <li>✓ Study (home office)</li>
+            <li>✓ Great Room</li>
+            <li>✓ Kitchen</li>
+            <li>✓ Morning Room (15' × 11')</li>
+            <li>✓ Powder Room</li>
+            <li>✓ Mudroom / Laundry</li>
+            <li>✓ 3-Car Garage</li>
+          </ul>
+        </div>
+        <div>
+          <h3 style="color:var(--primary);">2nd Floor</h3>
+          <ul style="list-style:none;padding-left:0;font-size:15px;line-height:2;">
+            <li>✓ Master Bedroom</li>
+            <li>✓ Master Bathroom</li>
+            <li>✓ Walk-in Closet (Master)</li>
+            <li>✓ Bedroom 2 (Kid)</li>
+            <li>✓ Bedroom 3 (Kid)</li>
+            <li>✓ Bedroom 4 (Guest)</li>
+            <li>✓ Shared Bath</li>
+            <li>✓ Game Room / Loft</li>
+          </ul>
+        </div>
+      </div>
+      <div style="margin-top:24px;padding:16px;background:rgba(212,160,23,0.1);border-radius:8px;border-left:4px solid var(--accent);">
+        <strong>Future basement plan:</strong> Egress window + bath rough-in installed at build to support a finished basement guest suite later.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ELEVATIONS -->
+<section class="section" style="background:white;">
+  <div class="container">
+    <div class="text-center mb-4">
+      <span style="font-size:13px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;">Exterior Styles</span>
+      <h2 style="font-size:36px;margin-top:8px;color:var(--primary);">Available Elevations</h2>
+    </div>
+    <div id="elevations" class="grid grid-3"></div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+document.getElementById('lvl1').src = HOME.floorPlans.level1;
+document.getElementById('lvl2').src = HOME.floorPlans.level2;
+
+const elevationsEl = document.getElementById('elevations');
+elevationsEl.innerHTML = HOME.floorPlans.elevations.map((e, i) => `
+  <div class="card" style="${e.name.includes('preferred') ? 'border-color:var(--accent);box-shadow:0 0 0 2px rgba(212,160,23,0.2);' : ''}">
+    <img src="${e.url}" alt="${e.name}" style="width:100%;border-radius:8px;margin-bottom:12px;">
+    <h3>${e.name} ${e.name.includes('preferred') ? '<span class="badge badge-accent">Our Pick</span>' : ''}</h3>
+    <p style="color:var(--text-soft);font-size:13px;line-height:1.6;">${e.desc}</p>
+  </div>
+`).join('');
+
+// Click floor plans to open lightbox
+['lvl1', 'lvl2'].forEach(id => {
+  document.getElementById(id).addEventListener('click', () => {
+    const lb = document.querySelector('.lightbox');
+    if (lb) {
+      lb.querySelector('img').src = document.getElementById(id).src;
+      lb.classList.add('open');
+    }
+  });
+});
+initLightbox();
+</script>
+</body>
+</html>

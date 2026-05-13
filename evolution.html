@@ -85,12 +85,14 @@
 <section style="padding: 0 0 64px;">
   <div class="container">
     <h2 style="font-size:32px;color:var(--primary);margin-bottom:16px;">All Line Items</h2>
-    <table class="table">
-      <thead><tr>
-        <th>Category</th><th>Item</th><th class="amount">Planned</th><th class="amount">Actual</th><th class="amount">Δ</th><th>Vendor</th><th>Paid</th>
-      </tr></thead>
-      <tbody id="itemsTbody"></tbody>
-    </table>
+    <div style="overflow-x: auto;">
+      <table class="table">
+        <thead><tr>
+          <th>Category</th><th>Item</th><th class="amount">Planned</th><th class="amount">Actual</th><th class="amount">Δ</th><th>Vendor</th><th>Paid</th>
+        </tr></thead>
+        <tbody id="itemsTbody"></tbody>
+      </table>
+    </div>
   </div>
 </section>
 

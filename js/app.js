@@ -100,6 +100,7 @@ function renderNav(activePage = '') {
         <li><a href="compare.html" data-page="compare" class="${activePage==='compare'?'active':''}">Compare</a></li>
         <li><a href="features.html" data-page="features" class="${activePage==='features'?'active':''}">Gold Package</a></li>
         <li><a href="budget.html" data-page="budget" class="${activePage==='budget'?'active':''}">Budget</a></li>
+        <li><a href="configurator.html" data-page="configurator" class="${activePage==='configurator'?'active':''}">Configurator</a></li>
         <li><a href="gallery.html" data-page="gallery" class="${activePage==='gallery'?'active':''}">Gallery</a></li>
         <li><a href="timeline.html" data-page="timeline" class="${activePage==='timeline'?'active':''}">Timeline</a></li>
         <li><a href="decisions.html" data-page="decisions" class="${activePage==='decisions'?'active':''}">Decisions</a></li>

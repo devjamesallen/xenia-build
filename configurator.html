@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configurator · Xenia Home Build</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
+<script src="js/meta.js"></script>
+<style>
+  .config-option { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; background: white; transition: all 0.15s; }
+  .config-option:hover { border-color: var(--primary-light); background: #fcfaf6; }
+  .config-option.checked { border-color: var(--accent); background: rgba(212,160,23,0.06); }
+  .config-option input[type=checkbox] { width: 22px; height: 22px; margin-top: 2px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; }
+  .config-content { flex: 1; }
+  .config-label { font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .config-cost { color: var(--primary); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .config-cost.included { color: var(--green); }
+  .config-desc { font-size: 13px; color: var(--text-soft); margin-top: 4px; }
+  .config-cat { background: var(--cream-dark); padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-soft); margin: 24px 0 12px; }
+  .summary-bar { position: sticky; top: 76px; background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; z-index: 50; box-shadow: var(--shadow); }
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; }
+  .summary-cell { text-align: center; }
+  .summary-num { font-size: 22px; font-weight: 700; color: var(--primary); font-family: var(--font-display); }
+  .summary-label { font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; }
+  .plan-pill { display: inline-flex; gap: 0; background: var(--cream-dark); padding: 4px; border-radius: 100px; }
+  .plan-pill button { padding: 8px 16px; border: none; background: transparent; border-radius: 100px; cursor: pointer; font-size: 13px; font-family: inherit; color: var(--text-soft); }
+  .plan-pill button.active { background: var(--primary); color: white; font-weight: 600; }
+  .actions-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+  @media print {
+    .nav, .footer, .actions-bar, .summary-bar { display: none !important; }
+    body { background: white !important; }
+    .config-option { break-inside: avoid; }
+  }
+</style>
+</head>
+<body data-page="configurator">
+
+<div id="nav-placeholder"></div>
+
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">Builder Meeting Prep</span>
+    <h1>Spec Configurator</h1>
+    <p>Toggle on/off the upgrades you want. Bring this to the Diyanni design meeting in June.</p>
+  </div>
+</section>
+
+<section style="padding: 0 0 64px;">
+  <div class="container">
+
+    <!-- PLAN PICKER -->
+    <div style="display:flex; justify-content:center; margin-bottom:20px;">
+      <div class="plan-pill">
+        <button data-plan="kelly" class="active">The Kelly</button>
+        <button data-plan="harborSpring">Harbor Spring</button>
+      </div>
+    </div>
+
+    <!-- LIVE SUMMARY BAR -->
+    <div class="summary-bar">
+      <div class="summary-grid">
+        <div class="summary-cell">
+          <div class="summary-num" id="sumBase">$0</div>
+          <div class="summary-label">Base Price</div>
+        </div>
+        <div class="summary-cell">
+          <div class="summary-num" id="sumUpgrades">$0</div>
+          <div class="summary-label">Upgrades Picked</div>
+        </div>
+        <div class="summary-cell">
+          <div class="summary-num" id="sumSubtotal">$0</div>
+          <div class="summary-label">Subtotal (House)</div>
+        </div>
+        <div class="summary-cell">
+          <div class="summary-num" id="sumAllIn">$0</div>
+          <div class="summary-label">All-In Est.</div>
+        </div>
+      </div>
+      <div class="actions-bar">
+        <button class="btn btn-primary" onclick="window.print()">🖨️ Print for Meeting</button>
+        <button class="btn btn-outline" id="resetBtn">Reset Selections</button>
+        <button class="btn btn-ghost" id="copyBtn">📋 Copy as Text</button>
+      </div>
+    </div>
+
+    <!-- CONFIG SECTIONS -->
+    <div id="configForm"></div>
+
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+// Configurator option catalog
+const OPTIONS = [
+  // EXTERIOR
+  { id: 'elev-b', cat: 'Exterior', label: 'Elevation B', desc: 'Upgraded porch posts, premium trusses, expanded front porch. Farmhouse aesthetic.', cost: 12000, checked: true },
+  { id: 'metal-roof', cat: 'Exterior', label: 'Metal roof accent at porch', desc: 'Standing seam metal over the front porch — modern farmhouse touch.', cost: 2500 },
+  { id: 'black-windows', cat: 'Exterior', label: 'Black window frames', desc: 'Black Pella window frames vs. standard white.', cost: 3500 },
+  { id: 'stone-upgrade', cat: 'Exterior', label: 'Cultured stone full-front', desc: 'Beyond standard plinth — extends stone up the front facade.', cost: 5000 },
+  { id: 'craftsman-doors', cat: 'Exterior', label: 'Upgraded front door style', desc: 'Craftsman door with sidelights and decorative glass.', cost: 1500 },
+
+  // KITCHEN
+  { id: 'quartz', cat: 'Kitchen', label: 'Quartz countertops (vs granite)', desc: 'Modern look, lower maintenance than granite. Both included options.', cost: 0, included: true, checked: true },
+  { id: 'kit-premium', cat: 'Kitchen', label: 'Premium cabinet tier', desc: 'Beyond standard 25-color selection — soft-close upgrade pulls and crown.', cost: 6000, checked: true },
+  { id: 'gas-line', cat: 'Kitchen', label: 'Gas line for range', desc: 'Plumbing for gas cooktop/range (recommended).', cost: 800, checked: true },
+  { id: 'big-island', cat: 'Kitchen', label: 'Extended kitchen island', desc: 'Larger waterfall island with overhang for stools.', cost: 4500 },
+  { id: 'pot-filler', cat: 'Kitchen', label: 'Pot filler at range', desc: 'Wall-mount swing-out faucet behind cooktop.', cost: 750 },
+
+  // FLOORING
+  { id: 'real-hardwood', cat: 'Flooring', label: 'Real hardwood (vs RevWood)', desc: 'Upgrade from Luxury RevWood wide plank to real hardwood. Big-ticket.', cost: 8000 },
+  { id: 'tile-master', cat: 'Flooring', label: 'Premium tile in master bath', desc: 'Beyond standard ceramic — porcelain or stone tile.', cost: 2000 },
+
+  // BATHROOMS
+  { id: 'master-shower', cat: 'Bathrooms', label: 'Master walk-in shower upgrade', desc: 'Larger zero-entry shower with bench. Standard already has 6\' soaking tub + walk-in.', cost: 2500 },
+  { id: 'tile-to-ceiling', cat: 'Bathrooms', label: 'Tile to ceiling (shower)', desc: 'Standard is partial-height tile in shower; upgrade goes to ceiling.', cost: 1500, checked: true },
+  { id: 'double-vanity', cat: 'Bathrooms', label: 'Double vanity in shared bath', desc: 'Useful when kids are sharing.', cost: 1800 },
+
+  // BASEMENT
+  { id: 'egress', cat: 'Basement', label: 'Egress window (1)', desc: 'Required for future basement bedroom — install at build.', cost: 3500, checked: true },
+  { id: 'bath-rough', cat: 'Basement', label: 'Bathroom rough-in', desc: 'Plumbing stub-outs for future finished basement bath.', cost: 4500, checked: true },
+  { id: 'extra-egress', cat: 'Basement', label: 'Second egress window', desc: 'For 2 future basement bedrooms (rare; usually 1 is plenty).', cost: 3000 },
+
+  // OUTDOOR
+  { id: 'covered-patio', cat: 'Outdoor', label: 'Covered back patio', desc: '12×16 covered patio off the great room/morning room.', cost: 12000 },
+  { id: 'screened-porch', cat: 'Outdoor', label: 'Screened porch', desc: 'Enclosed screened back porch.', cost: 18000 },
+  { id: 'outdoor-utils', cat: 'Outdoor', label: 'Outdoor kitchen utility stubs', desc: 'Gas, water, electric stub-outs for future outdoor kitchen.', cost: 1500 },
+
+  // STRUCTURAL OPTIONS
+  { id: 'finished-bonus', cat: 'Structural Options', label: 'Finished bonus room over garage', desc: 'Additional ~300-400 SF flex room over the garage.', cost: 22000 },
+  { id: 'mud-built-ins', cat: 'Structural Options', label: 'Mudroom built-in lockers', desc: 'Custom cubbies + bench for the kids by the garage entry.', cost: 3500 },
+
+  // SMART HOME / TECH
+  { id: 'cat6-rooms', cat: 'Smart Home', label: 'CAT6 ethernet to all bedrooms', desc: 'Hardwired networking — future-proof.', cost: 1200, checked: true },
+  { id: 'extra-recess', cat: 'Smart Home', label: 'Extra recessed lighting package', desc: 'Beyond standard 11 cans + $3,500 allowance.', cost: 1500 },
+  { id: 'ev-outlet', cat: 'Smart Home', label: 'EV charging outlet (240V)', desc: 'NEMA 14-50 outlet in garage for future EV charging.', cost: 600, checked: true }
+];
+
+let currentPlan = 'kelly';
+let state = {};
+
+function loadState() {
+  state = JSON.parse(localStorage.getItem('xeniabuild:configurator') || '{}');
+  // initialize defaults from OPTIONS.checked
+  OPTIONS.forEach(o => {
+    if (state[o.id] === undefined) state[o.id] = !!o.checked;
+  });
+}
+
+function saveState() {
+  localStorage.setItem('xeniabuild:configurator', JSON.stringify(state));
+}
+
+function render() {
+  // Group by category
+  const byCat = {};
+  OPTIONS.forEach(o => {
+    if (!byCat[o.cat]) byCat[o.cat] = [];
+    byCat[o.cat].push(o);
+  });
+
+  const html = Object.entries(byCat).map(([cat, opts]) => `
+    <div class="config-cat">${cat}</div>
+    ${opts.map(o => {
+      const checked = state[o.id];
+      const costDisplay = o.included ? '<span class="config-cost included">Included</span>' : `<span class="config-cost">+${fmt(o.cost)}</span>`;
+      return `
+        <label class="config-option ${checked ? 'checked' : ''}">
+          <input type="checkbox" data-id="${o.id}" ${checked ? 'checked' : ''}>
+          <div class="config-content">
+            <div class="config-label">${o.label} ${costDisplay}</div>
+            <div class="config-desc">${o.desc}</div>
+          </div>
+        </label>
+      `;
+    }).join('')}
+  `).join('');
+
+  document.getElementById('configForm').innerHTML = html;
+
+  document.querySelectorAll('.config-option input').forEach(input => {
+    input.addEventListener('change', e => {
+      const id = e.target.dataset.id;
+      state[id] = e.target.checked;
+      saveState();
+      e.target.closest('.config-option').classList.toggle('checked', e.target.checked);
+      updateSummary();
+    });
+  });
+
+  updateSummary();
+}
+
+function updateSummary() {
+  const plan = PLANS[currentPlan];
+  const base = plan.basePrice;
+  const upgrades = OPTIONS.reduce((sum, o) => (state[o.id] && !o.included ? sum + o.cost : sum), 0);
+  const subtotal = base + upgrades;
+  // Same site work + customs + contingency model as budget page
+  const customs = 0; // egress/bath-rough are in OPTIONS
+  const siteWork = 141500; // realistic
+  const construction = subtotal + customs;
+  const contingency = Math.round(construction * 0.10);
+  const loan = 8000;
+  const allIn = construction + siteWork + contingency + loan;
+
+  document.getElementById('sumBase').textContent = fmt(base);
+  document.getElementById('sumUpgrades').textContent = fmt(upgrades);
+  document.getElementById('sumSubtotal').textContent = fmt(subtotal);
+  document.getElementById('sumAllIn').textContent = fmt(allIn);
+}
+
+document.querySelectorAll('.plan-pill button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.plan-pill button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentPlan = btn.dataset.plan;
+    updateSummary();
+  });
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (confirm('Reset all selections to defaults?')) {
+    state = {};
+    OPTIONS.forEach(o => state[o.id] = !!o.checked);
+    saveState();
+    render();
+  }
+});
+
+document.getElementById('copyBtn').addEventListener('click', () => {
+  const plan = PLANS[currentPlan];
+  const lines = [
+    `${plan.name} — Configurator Selections`,
+    `Base Price: ${fmt(plan.basePrice)}`,
+    `${plan.sqft.toLocaleString()} SF · ${plan.bedrooms} BR / ${plan.bathrooms} BA`,
+    '',
+    'SELECTED UPGRADES:'
+  ];
+  let total = 0;
+  OPTIONS.filter(o => state[o.id]).forEach(o => {
+    if (o.included) lines.push(`  ✓ ${o.label} (Included)`);
+    else { lines.push(`  ✓ ${o.label} — ${fmt(o.cost)}`); total += o.cost; }
+  });
+  lines.push('', `Upgrades subtotal: ${fmt(total)}`);
+  lines.push(`Base + upgrades: ${fmt(plan.basePrice + total)}`);
+  const text = lines.join('\n');
+  navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!')).catch(() => {
+    const blob = new Blob([text], {type: 'text/plain'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'configurator.txt'; a.click();
+  });
+});
+
+loadState();
+render();
+</script>
+</body>
+</html>

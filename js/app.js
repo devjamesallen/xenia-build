@@ -4,6 +4,20 @@
 const fmt = n => '$' + Math.round(n).toLocaleString();
 const fmtShort = n => n >= 1000 ? '$' + (n/1000).toFixed(0) + 'K' : '$' + n;
 
+// --- Apply plan decision from localStorage if set in admin ---
+// (Runs before any page reads HOME.decisionStatus)
+(function applyStoredPlanDecision() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('xeniabuild:planDecision'));
+    if (saved && window.HOME) {
+      if (saved.status) HOME.decisionStatus = saved.status;
+      if (saved.primary !== undefined) HOME.primaryPlan = saved.primary;
+      if (saved.date !== undefined) HOME.decisionDate = saved.date;
+      if (saved.note !== undefined) HOME.leaningNote = saved.note;
+    }
+  } catch {}
+})();
+
 // --- Local storage state ---
 const STORAGE = {
   get(key, fallback) {

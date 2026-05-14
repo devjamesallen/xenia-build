@@ -76,15 +76,52 @@
     </div>
 
     <div class="tab-buttons">
-      <button class="tab-button active" data-tab="budget">Budget</button>
+      <button class="tab-button active" data-tab="plan">Plan Decision</button>
+      <button class="tab-button" data-tab="budget">Budget</button>
       <button class="tab-button" data-tab="timeline">Timeline</button>
       <button class="tab-button" data-tab="decisions">Decisions</button>
       <button class="tab-button" data-tab="journal">Journal</button>
       <button class="tab-button" data-tab="settings">Settings</button>
     </div>
 
+    <!-- PLAN DECISION TAB -->
+    <div class="tab-content active" id="tab-plan">
+      <h2 style="color:var(--primary);">Plan Decision</h2>
+      <p style="color:var(--text-soft); font-size:14px; margin-bottom:16px;">Update the site's leaning indicator and locked-in status. Saved to your browser; for cross-device sync, requires Supabase.</p>
+
+      <div class="card">
+        <div class="input-group mb-2">
+          <label>Decision Status</label>
+          <select id="planStatus">
+            <option value="comparing">Comparing — no lean yet</option>
+            <option value="leaning-kelly">Leaning toward The Kelly</option>
+            <option value="leaning-harborSpring">Leaning toward The Harbor Spring</option>
+            <option value="locked-in">LOCKED IN ✅</option>
+          </select>
+        </div>
+        <div class="input-group mb-2">
+          <label>Primary Plan (if locked in)</label>
+          <select id="planPrimary">
+            <option value="">— Not decided —</option>
+            <option value="kelly">The Kelly</option>
+            <option value="harborSpring">The Harbor Spring</option>
+          </select>
+        </div>
+        <div class="input-group mb-2">
+          <label>Decision Date (when locked in)</label>
+          <input type="date" id="planDate">
+        </div>
+        <div class="input-group mb-2">
+          <label>Leaning Note (optional context)</label>
+          <textarea id="planNote" rows="3" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; font-family:inherit;"></textarea>
+        </div>
+        <button class="btn btn-primary" id="savePlanBtn">💾 Save Plan Decision</button>
+        <p id="planSavedMsg" style="color:var(--green); font-size:13px; margin-top:8px; display:none;">✓ Saved! Refresh the homepage to see the updated banner.</p>
+      </div>
+    </div>
+
     <!-- BUDGET TAB -->
-    <div class="tab-content active" id="tab-budget">
+    <div class="tab-content" id="tab-budget">
       <div class="flex justify-between items-center mb-2">
         <h2 style="color:var(--primary);">Budget Items</h2>
         <button class="btn btn-primary" id="addBudgetBtn">+ Add Line Item</button>
@@ -459,8 +496,39 @@ document.getElementById('settingsForm').addEventListener('submit', async (e) => 
   } catch (ex) { alert('Save failed: ' + ex.message); }
 });
 
+// ---------------- PLAN DECISION ----------------
+function loadPlanDecision() {
+  const saved = STORAGE.get('planDecision', null);
+  const status = saved?.status || HOME.decisionStatus || 'comparing';
+  const primary = saved?.primary || HOME.primaryPlan || '';
+  const date = saved?.date || HOME.decisionDate || '';
+  const note = saved?.note ?? HOME.leaningNote ?? '';
+  document.getElementById('planStatus').value = status;
+  document.getElementById('planPrimary').value = primary || '';
+  document.getElementById('planDate').value = date || '';
+  document.getElementById('planNote').value = note || '';
+}
+
+document.getElementById('savePlanBtn').addEventListener('click', () => {
+  const decision = {
+    status: document.getElementById('planStatus').value,
+    primary: document.getElementById('planPrimary').value || null,
+    date: document.getElementById('planDate').value || null,
+    note: document.getElementById('planNote').value || ''
+  };
+  STORAGE.set('planDecision', decision);
+  // Update HOME so other pages opened in this browser session see it
+  HOME.decisionStatus = decision.status;
+  HOME.primaryPlan = decision.primary;
+  HOME.decisionDate = decision.date;
+  HOME.leaningNote = decision.note;
+  document.getElementById('planSavedMsg').style.display = 'block';
+  setTimeout(() => { document.getElementById('planSavedMsg').style.display = 'none'; }, 4000);
+});
+
 async function loadAll() {
   try {
+    loadPlanDecision();
     await Promise.all([loadBudget(), loadTimeline(), loadDecisions(), loadJournal(), loadSettings()]);
   } catch (ex) {
     console.error('Load failed:', ex);

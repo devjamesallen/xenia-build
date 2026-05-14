@@ -8,7 +8,7 @@ window.PLANS = {
   kelly: {
     id: "kelly",
     name: "The Kelly",
-    tagline: "Multi-Generational Two Story",
+    tagline: "Future-Proof Two Story",
     builder: "Diyanni Custom Homes",
     sqft: 3461,
     bedrooms: 5,
@@ -37,7 +37,7 @@ window.PLANS = {
     },
     highlights: [
       "5 bedrooms — 1 on 1st floor (guest suite), 4 upstairs",
-      "True multi-generational layout from day one",
+      "Future-proof layout — grows with the family from day one",
       "4 bathrooms — solves bathroom traffic forever",
       "3-car SIDE-LOAD garage (front facade not dominated by garage)",
       "Best $/SF among Diyanni plans ($166/SF)"
@@ -134,7 +134,7 @@ window.HOME = {
   decisionStatus: "leaning-kelly",  // 'comparing' | 'leaning-kelly' | 'leaning-harborSpring' | 'locked-in'
   primaryPlan: "kelly",             // 'kelly' | 'harborSpring' | null
   contenders: ["kelly", "rosedale", "harborSpring"],
-  leaningNote: "Wife loves the Kelly — its multi-gen layout and 1st floor guest suite. Still pending firm Diyanni quote in June.",
+  leaningNote: "Wife loves the Kelly — its future-proof layout and 1st floor guest suite. Still pending firm Diyanni quote in June.",
 
   // ---------- PLAN BASICS (defaults to Harbor Spring for backward compat) ----------
   plan: "The Harbor Spring",

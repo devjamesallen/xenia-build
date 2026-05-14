@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Kelly · Xenia Home Build</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
+<script src="js/meta.js"></script>
+</head>
+<body data-page="kelly">
+
+<div id="nav-placeholder"></div>
+
+<section class="hero">
+  <div class="hero-img" id="kellyHero"></div>
+  <div class="hero-content">
+    <div class="container">
+      <span class="hero-eyebrow">Diyanni · Multi-Gen</span>
+      <h1>The Kelly</h1>
+      <p>3,461 SF · 5 bedrooms · 4 baths · 1st floor guest suite · 3-car side-load garage.</p>
+      <div class="hero-stats">
+        <div><div class="hero-stat-value">3,461</div><div class="hero-stat-label">Sq Ft</div></div>
+        <div><div class="hero-stat-value">5</div><div class="hero-stat-label">Bedrooms</div></div>
+        <div><div class="hero-stat-value">4</div><div class="hero-stat-label">Bathrooms</div></div>
+        <div><div class="hero-stat-value">3-Car</div><div class="hero-stat-label">Side-Load</div></div>
+        <div><div class="hero-stat-value">$575K</div><div class="hero-stat-label">Base Price</div></div>
+      </div>
+      <div class="hero-actions">
+        <a href="#floorplan" class="btn btn-primary">Floor Plan ↓</a>
+        <a href="" id="tourLink" target="_blank" class="btn btn-outline" style="background:rgba(255,255,255,0.1); color:white; border-color:rgba(255,255,255,0.3);">3D Tour →</a>
+        <a href="compare.html" class="btn btn-outline" style="background:rgba(255,255,255,0.1); color:white; border-color:rgba(255,255,255,0.3);">vs Harbor Spring</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY KELLY -->
+<section class="section">
+  <div class="container">
+    <div class="text-center mb-4">
+      <span style="font-size:13px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;">Why The Kelly</span>
+      <h2 style="font-size:36px;margin-top:8px;color:var(--primary);">What sets it apart</h2>
+    </div>
+    <div class="grid grid-3">
+      <div class="card">
+        <div style="font-size:32px;margin-bottom:8px;">👨‍👩‍👧‍👦</div>
+        <h3>1st floor guest suite</h3>
+        <p style="color:var(--text-soft);font-size:14px;">Dedicated guest bedroom + full bath on the main level. Hosting family for weeks instead of nights becomes painless.</p>
+      </div>
+      <div class="card">
+        <div style="font-size:32px;margin-bottom:8px;">🛁</div>
+        <h3>4 bathrooms</h3>
+        <p style="color:var(--text-soft);font-size:14px;">No bathroom traffic jams. Master + secondary BRs upstairs each get their own access. Plus the guest bath downstairs.</p>
+      </div>
+      <div class="card">
+        <div style="font-size:32px;margin-bottom:8px;">🚗</div>
+        <h3>Side-load garage</h3>
+        <p style="color:var(--text-soft);font-size:14px;">3-car side-load means the front facade is house, not garage doors. Better curb appeal, better resale.</p>
+      </div>
+      <div class="card">
+        <div style="font-size:32px;margin-bottom:8px;">📐</div>
+        <h3>3,461 SF</h3>
+        <p style="color:var(--text-soft);font-size:14px;">430 more square feet than Harbor Spring. Room to grow into without ever feeling tight.</p>
+      </div>
+      <div class="card">
+        <div style="font-size:32px;margin-bottom:8px;">💰</div>
+        <h3>Best $/SF in lineup</h3>
+        <p style="color:var(--text-soft);font-size:14px;">$166/SF — actually a better per-square-foot value than Harbor Spring's $173. You pay more total but get more for each dollar.</p>
+      </div>
+      <div class="card">
+        <div style="font-size:32px;margin-bottom:8px;">🏛️</div>
+        <h3>Multi-gen ready</h3>
+        <p style="color:var(--text-soft);font-size:14px;">Diyanni markets this as "Multi-Generational Two Story" — purpose-built for guests, aging parents, or grown kids visiting.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FLOOR PLAN -->
+<section id="floorplan" style="padding: 0 0 64px;">
+  <div class="container">
+    <div class="text-center mb-4">
+      <span style="font-size:13px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;">Floor Plan</span>
+      <h2 style="font-size:36px;margin-top:8px;color:var(--primary);">Two floors of family living</h2>
+    </div>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Level 1</div>
+        <h2>First Floor</h2>
+        <p style="color:var(--text-soft);font-size:14px;margin-bottom:16px;">Open great room, kitchen w/ morning room, dedicated study, AND a guest bedroom with full bath.</p>
+        <img id="lvl1" src="" alt="First floor plan" style="width:100%;border-radius:8px;cursor:pointer;background:#fff;">
+      </div>
+      <div class="card">
+        <div class="card-title">Level 2</div>
+        <h2>Second Floor</h2>
+        <p style="color:var(--text-soft);font-size:14px;margin-bottom:16px;">Master suite + 3 secondary bedrooms upstairs. Master gets walk-in closet + luxury bath.</p>
+        <img id="lvl2" src="" alt="Second floor plan" style="width:100%;border-radius:8px;cursor:pointer;background:#fff;">
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <h2>Room Inventory</h2>
+      <div class="grid grid-2 mt-2">
+        <div>
+          <h3 style="color:var(--primary);">1st Floor</h3>
+          <ul id="rooms1" style="list-style:none;padding-left:0;font-size:15px;line-height:2;"></ul>
+        </div>
+        <div>
+          <h3 style="color:var(--primary);">2nd Floor</h3>
+          <ul id="rooms2" style="list-style:none;padding-left:0;font-size:15px;line-height:2;"></ul>
+        </div>
+      </div>
+      <div style="margin-top:24px;padding:16px;background:rgba(212,160,23,0.1);border-radius:8px;border-left:4px solid var(--accent);">
+        <strong>The Kelly difference:</strong> Diyanni calls this their "Multi-Generational Two Story" plan. The 1st-floor Guest/BR 2 with adjacent full bath is what makes it work for long-term guests, aging parents, or college kids coming home.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ELEVATIONS -->
+<section class="section" style="background:white;">
+  <div class="container">
+    <div class="text-center mb-4">
+      <span style="font-size:13px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;">Exterior Styles</span>
+      <h2 style="font-size:36px;margin-top:8px;color:var(--primary);">Available Elevations</h2>
+    </div>
+    <div id="elevations" class="grid grid-3"></div>
+  </div>
+</section>
+
+<!-- PRICING SNAPSHOT -->
+<section class="section">
+  <div class="container">
+    <div class="card" style="max-width:720px; margin:0 auto; text-align:center;">
+      <span style="font-size:13px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;">Pricing</span>
+      <h2 style="font-size:32px; margin-top:8px; color:var(--primary);">Verified Xenia Base Price</h2>
+      <div style="font-size:48px; font-family:var(--font-display); font-weight:700; color:var(--primary); margin: 16px 0;">$574,980</div>
+      <p style="color:var(--text-soft); font-size:15px;">All-in estimate (with land, site work, contingency, loan): <strong>~$813K</strong></p>
+      <p style="color:var(--text-light); font-size:13px; margin-top:8px;">$166/SF — best value per square foot of any Diyanni plan we evaluated</p>
+      <div class="flex gap-1 mt-3" style="justify-content:center; flex-wrap:wrap;">
+        <a href="budget.html?plan=kelly" class="btn btn-primary">Budget Details</a>
+        <a href="compare.html" class="btn btn-outline">Compare with Harbor Spring</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+const KELLY = PLANS.kelly;
+document.getElementById('kellyHero').style.backgroundImage = `url('${KELLY.heroImage}')`;
+document.getElementById('lvl1').src = KELLY.floorPlans.level1;
+document.getElementById('lvl2').src = KELLY.floorPlans.level2;
+document.getElementById('tourLink').href = KELLY.virtualTourUrl;
+
+document.getElementById('rooms1').innerHTML = KELLY.rooms.level1.map(r => `<li>✓ ${r}</li>`).join('');
+document.getElementById('rooms2').innerHTML = KELLY.rooms.level2.map(r => `<li>✓ ${r}</li>`).join('');
+
+document.getElementById('elevations').innerHTML = KELLY.floorPlans.elevations.map(e => `
+  <div class="card" style="${e.name.includes('preferred') ? 'border-color:var(--accent);box-shadow:0 0 0 2px rgba(212,160,23,0.2);' : ''}">
+    <img src="${e.url}" alt="${e.name}" style="width:100%;border-radius:8px;margin-bottom:12px;">
+    <h3>${e.name} ${e.name.includes('preferred') ? '<span class="badge badge-accent">Our Pick</span>' : ''}</h3>
+    <p style="color:var(--text-soft);font-size:13px;line-height:1.6;">${e.desc}</p>
+  </div>
+`).join('');
+
+['lvl1', 'lvl2'].forEach(id => {
+  document.getElementById(id).addEventListener('click', () => {
+    const lb = document.querySelector('.lightbox');
+    if (lb) {
+      lb.querySelector('img').src = document.getElementById(id).src;
+      lb.classList.add('open');
+    }
+  });
+});
+initLightbox();
+</script>
+</body>
+</html>

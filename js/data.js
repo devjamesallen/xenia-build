@@ -1,14 +1,101 @@
 // =================== XENIA HOME BUILD DATA ===================
 // Edit these values as your numbers firm up; the site recalculates automatically.
 
+// ============================================================
+// PLAN OPTIONS - currently choosing between Kelly + Harbor Spring
+// ============================================================
+window.PLANS = {
+  kelly: {
+    id: "kelly",
+    name: "The Kelly",
+    tagline: "Multi-Generational Two Story",
+    builder: "Diyanni Custom Homes",
+    sqft: 3461,
+    bedrooms: 5,
+    bathrooms: 4,
+    stories: 2,
+    garageType: "3-Car Side-Load",
+    garageSqft: 728,
+    basePrice: 574980,
+    masterLocation: "Upstairs",
+    firstFloorGuest: true,
+    plansUrl: "https://diyannihomes.com/Plans/FloorPlanDetails/THE-KELLY",
+    virtualTourUrl: "https://my.matterport.com/show/?m=bdut7FnuNeo",
+    heroImage: "https://admin.diyannihomes.com/content/img/StandardElevation_FloorPlanId_73_638458538859422018.jpg",
+    floorPlans: {
+      level1: "https://admin.diyannihomes.com/FloorPlanImages/StandardFloorPlan_THE%20KELLY_Level_1_FloorPlanId_73_639129818040490468.jpg",
+      level2: "https://admin.diyannihomes.com/FloorPlanImages/StandardFloorPlan_THE%20KELLY_Level_2_FloorPlanId_73_638549124996052385.jpg",
+      elevations: [
+        { name: "Elevation A", url: "https://admin.diyannihomes.com/content/img/StandardElevation_ElevationId_16572_20251008072053.jpg", desc: "3-car side-load garage, straight porch posts, standard roof trusses, window in garage gable." },
+        { name: "Elevation B (preferred)", url: "https://admin.diyannihomes.com/content/img/StandardElevation_ElevationId_16339_20250916091117.jpg", desc: "Cedar-wrapped beams + porch posts + gable details. Premium roof trusses, expanded front porch (+97 SF), Father/Son gable at garage." },
+        { name: "Elevation C", url: "https://admin.diyannihomes.com/content/img/StandardElevation_FloorPlanId_73_638458538859422018.jpg", desc: "Full cultured stone at garage bumps + porch exterior. Casement/picture windows on front. Aluminum siding w/ woodgrain look. Hip roof system." }
+      ]
+    },
+    rooms: {
+      level1: ["Foyer", "Study (home office)", "Great Room", "Kitchen", "Morning Room", "Powder Room", "Mudroom / Laundry", "Guest BR (1st floor) + Full Bath", "3-Car Side-Load Garage"],
+      level2: ["Master Bedroom", "Master Bathroom", "Walk-in Closet (Master)", "Bedroom 3 (Kid)", "Bedroom 4 (Kid)", "Bedroom 5", "Shared Bath(s)"]
+    },
+    highlights: [
+      "5 bedrooms — 1 on 1st floor (guest suite), 4 upstairs",
+      "True multi-generational layout from day one",
+      "4 bathrooms — solves bathroom traffic forever",
+      "3-car SIDE-LOAD garage (front facade not dominated by garage)",
+      "Best $/SF among Diyanni plans ($166/SF)"
+    ]
+  },
+
+  harborSpring: {
+    id: "harborSpring",
+    name: "The Harbor Spring",
+    tagline: "Two Story · Family Layout",
+    builder: "Diyanni Custom Homes",
+    sqft: 3031,
+    bedrooms: 4,
+    bathrooms: 2.5,
+    stories: 2,
+    garageType: "3-Car Front-Load",
+    garageSqft: 724,
+    basePrice: 525210,
+    masterLocation: "Upstairs",
+    firstFloorGuest: false,
+    plansUrl: "https://diyannihomes.com/Plans/FloorPlanDetails/THE-HARBOR-SPRING-",
+    virtualTourUrl: "https://my.matterport.com/show/?m=dRwcTENFmXJ",
+    heroImage: "https://admin.diyannihomes.com/galleries/T%201210%20Longshore%20Rd00094-2.jpg",
+    floorPlans: {
+      level1: "https://admin.diyannihomes.com/FloorPlanImages/StandardFloorPlan_THE%20HARBOR%20SPRING%20_Level_1_FloorPlanId_1150_639129805076418062.jpg",
+      level2: "https://admin.diyannihomes.com/FloorPlanImages/StandardFloorPlan_THE%20HARBOR%20SPRING%20_Level_2_FloorPlanId_1150_638548285979688100.jpg",
+      elevations: [
+        { name: "Elevation A", url: "https://admin.diyannihomes.com/content/img/StandardElevation_FloorPlanId_1150_638382686937503062.jpg", desc: "3-car front-load garage, straight porch posts, standard roof trusses." },
+        { name: "Elevation B (preferred)", url: "https://admin.diyannihomes.com/content/img/StandardElevation_FloorPlanId_1150_638382706034642088.jpg", desc: "Premium roof trusses, upgraded gutters, expanded front porch (+59 SF). Optional tapered Craftsman posts, metal roofing, black windows." },
+        { name: "Elevation C", url: "https://admin.diyannihomes.com/content/img/StandardElevation_FloorPlanId_1150_638368838783032555.jpg", desc: "Full cultured stone face, hip roof system, swept porch wall." }
+      ]
+    },
+    rooms: {
+      level1: ["Foyer", "Study (home office)", "Great Room", "Kitchen", "Morning Room (15' × 11')", "Powder Room", "Mudroom / Laundry", "3-Car Front-Load Garage"],
+      level2: ["Master Bedroom", "Master Bathroom", "Walk-in Closet (Master)", "Bedroom 2 (Kid)", "Bedroom 3 (Kid)", "Bedroom 4 (Guest)", "Shared Bath", "Game Room / Loft"]
+    },
+    highlights: [
+      "All 4 BR upstairs — kids close to parents",
+      "1st floor study (dedicated home office)",
+      "Built-in morning room off kitchen",
+      "Game room / loft upstairs for kids",
+      "Best size/budget value at $173/SF"
+    ]
+  }
+};
+
+// ============================================================
+// CURRENT BUILD STATE
+// Set primaryPlan to lock in a choice; null while comparing.
+// ============================================================
 window.HOME = {
   // ---------- DECISION ----------
-  // Plan locked in May 2026 after evaluating 11 plans across 6 builders.
-  // See why.html for the full decision rationale.
-  decisionDate: "2026-05-12",
-  decisionStatus: "confirmed",
+  decisionDate: null,
+  decisionStatus: "comparing",  // 'comparing' | 'leaning-kelly' | 'leaning-harborSpring' | 'locked-in'
+  primaryPlan: null,            // 'kelly' | 'harborSpring' | null
+  contenders: ["kelly", "harborSpring"],
 
-  // ---------- PLAN BASICS ----------
+  // ---------- PLAN BASICS (defaults to Harbor Spring for backward compat) ----------
   plan: "The Harbor Spring",
   builder: "Diyanni Custom Homes",
   location: "Xenia Township, Greene County, Ohio",

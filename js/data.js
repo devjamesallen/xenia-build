@@ -60,7 +60,7 @@ window.PLANS = {
     firstFloorGuest: false,
     plansUrl: "https://diyannihomes.com/Plans/FloorPlanDetails/THE-ROSEDALE",
     virtualTourUrl: "https://my.matterport.com/show/?m=fsNkDt5pMZN",
-    heroImage: "https://admin.diyannihomes.com/content/img/StandardElevation_FloorPlanId_72_638271872360047622.jpg",
+    heroImage: "https://admin.diyannihomes.com/galleries/T%2010555%20Beale%20Rd00107.jpg",
     floorPlans: {
       level1: "https://admin.diyannihomes.com/FloorPlanImages/StandardFloorPlan_THE%20ROSEDALE_Level_1_FloorPlanId_72_639129844189102631.jpg",
       level2: "https://admin.diyannihomes.com/FloorPlanImages/StandardFloorPlan_THE%20ROSEDALE_Level_2_FloorPlanId_72_638307272660248156.jpg",

@@ -91,9 +91,10 @@ window.PLANS = {
 window.HOME = {
   // ---------- DECISION ----------
   decisionDate: null,
-  decisionStatus: "comparing",  // 'comparing' | 'leaning-kelly' | 'leaning-harborSpring' | 'locked-in'
-  primaryPlan: null,            // 'kelly' | 'harborSpring' | null
+  decisionStatus: "leaning-kelly",  // 'comparing' | 'leaning-kelly' | 'leaning-harborSpring' | 'locked-in'
+  primaryPlan: "kelly",             // 'kelly' | 'harborSpring' | null
   contenders: ["kelly", "harborSpring"],
+  leaningNote: "Wife loves the Kelly — its multi-gen layout and 1st floor guest suite. Still pending firm Diyanni quote in June.",
 
   // ---------- PLAN BASICS (defaults to Harbor Spring for backward compat) ----------
   plan: "The Harbor Spring",

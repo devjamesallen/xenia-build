@@ -35,6 +35,16 @@
   </div>
 </section>
 
+<!-- LEANING INDICATOR -->
+<section id="leaningBanner" style="display:none; padding:16px 0; background:rgba(212, 160, 23, 0.1); border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; text-align:center;">
+      <span class="badge badge-accent" style="font-size:11px;">Current Leaning</span>
+      <span style="font-size:15px; color:var(--text);" id="leaningText"></span>
+    </div>
+  </div>
+</section>
+
 <!-- PLAN PICKER -->
 <section class="section">
   <div class="container">
@@ -182,6 +192,24 @@
 <script src="js/data.js"></script>
 <script src="js/app.js"></script>
 <script>
+// Render leaning banner if applicable
+const leaning = HOME.decisionStatus;
+const leaningBanner = document.getElementById('leaningBanner');
+const leaningText = document.getElementById('leaningText');
+if (leaning === 'leaning-kelly') {
+  leaningBanner.style.display = 'block';
+  leaningText.innerHTML = `Currently leaning toward <strong><a href="kelly.html" style="color:var(--primary);">The Kelly</a></strong>${HOME.leaningNote ? ' — ' + HOME.leaningNote : ''}`;
+} else if (leaning === 'leaning-harborSpring') {
+  leaningBanner.style.display = 'block';
+  leaningText.innerHTML = `Currently leaning toward <strong><a href="floor-plan.html" style="color:var(--primary);">The Harbor Spring</a></strong>${HOME.leaningNote ? ' — ' + HOME.leaningNote : ''}`;
+} else if (leaning === 'locked-in' && HOME.primaryPlan) {
+  leaningBanner.style.display = 'block';
+  leaningBanner.style.background = 'rgba(16, 185, 129, 0.1)';
+  const planUrl = HOME.primaryPlan === 'kelly' ? 'kelly.html' : 'floor-plan.html';
+  const planName = HOME.primaryPlan === 'kelly' ? 'The Kelly' : 'The Harbor Spring';
+  leaningText.innerHTML = `✅ Locked in: <strong><a href="${planUrl}" style="color:var(--primary);">${planName}</a></strong>${HOME.decisionDate ? ' · ' + HOME.decisionDate : ''}`;
+}
+
 // Calculate budget summary
 const b = calcBudget();
 document.getElementById('heroPrice').textContent = fmtShort(b.total);

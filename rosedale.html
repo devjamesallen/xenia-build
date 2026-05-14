@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Rosedale · Xenia Home Build</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
+<script src="js/meta.js"></script>
+</head>
+<body data-page="rosedale">
+
+<div id="nav-placeholder"></div>
+
+<section class="hero">
+  <div class="hero-img" id="rosedaleHero"></div>
+  <div class="hero-content">
+    <div class="container">
+      <span class="hero-eyebrow">Diyanni · 1st Floor Master</span>
+      <h1>The Rosedale</h1>
+      <p>2,872 SF · 3 bedrooms · 3.5 baths · First floor master · Age-in-place ready.</p>
+      <div class="hero-stats">
+        <div><div class="hero-stat-value">2,872</div><div class="hero-stat-label">Sq Ft</div></div>
+        <div><div class="hero-stat-value">3</div><div class="hero-stat-label">Bedrooms</div></div>
+        <div><div class="hero-stat-value">3.5</div><div class="hero-stat-label">Bathrooms</div></div>
+        <div><div class="hero-stat-value">1st Flr</div><div class="hero-stat-label">Master</div></div>
+        <div><div class="hero-stat-value">$529K</div><div class="hero-stat-label">Base Price</div></div>
+      </div>
+      <div class="hero-actions">
+        <a href="#floorplan" class="btn btn-primary">Floor Plan ↓</a>
+        <a href="" id="tourLink" target="_blank" class="btn btn-outline" style="background:rgba(255,255,255,0.1); color:white; border-color:rgba(255,255,255,0.3);">3D Tour →</a>
+        <a href="compare.html" class="btn btn-outline" style="background:rgba(255,255,255,0.1); color:white; border-color:rgba(255,255,255,0.3);">Compare All 3</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="text-center mb-4">
+      <span style="font-size:13px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;">Why The Rosedale</span>
+      <h2 style="font-size:36px;margin-top:8px;color:var(--primary);">What sets it apart</h2>
+    </div>
+    <div class="grid grid-3">
+      <div class="card">
+        <div style="font-size:32px;margin-bottom:8px;">🛏️</div>
+        <h3>1st floor master</h3>
+        <p style="color:var(--text-soft);font-size:14px;">Age-in-place ready. No stairs to the bedroom for our future selves — or for a family member who can't do stairs.</p>
+      </div>
+      <div class="card">
+        <div style="font-size:32px;margin-bottom:8px;">🌅</div>
+        <h3>Morning room included</h3>
+        <p style="color:var(--text-soft);font-size:14px;">Built-in morning room off the kitchen — same standard inclusion as Kelly and Harbor Spring.</p>
+      </div>
+      <div class="card">
+        <div style="font-size:32px;margin-bottom:8px;">🛁</div>
+        <h3>3.5 baths in 2,872 SF</h3>
+        <p style="color:var(--text-soft);font-size:14px;">High bath count for the square footage — rare in this size range.</p>
+      </div>
+      <div class="card">
+        <div style="font-size:32px;margin-bottom:8px;">⚠️</div>
+        <h3>Only 3 bedrooms</h3>
+        <p style="color:var(--text-soft);font-size:14px;">Fewer bedrooms than Kelly or Harbor Spring. May be tight for family of 4 long-term.</p>
+      </div>
+      <div class="card">
+        <div style="font-size:32px;margin-bottom:8px;">📐</div>
+        <h3>2,872 SF</h3>
+        <p style="color:var(--text-soft);font-size:14px;">Smaller than the other two — 590 SF less than Kelly, 159 SF less than Harbor Spring.</p>
+      </div>
+      <div class="card">
+        <div style="font-size:32px;margin-bottom:8px;">💰</div>
+        <h3>$184/SF</h3>
+        <p style="color:var(--text-soft);font-size:14px;">Higher per-SF than Kelly ($166) or Harbor Spring ($173). You're paying for 1st floor master configuration.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="floorplan" style="padding: 0 0 64px;">
+  <div class="container">
+    <div class="text-center mb-4">
+      <span style="font-size:13px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;">Floor Plan</span>
+      <h2 style="font-size:36px;margin-top:8px;color:var(--primary);">Single-level master living</h2>
+    </div>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Level 1</div>
+        <h2>First Floor</h2>
+        <p style="color:var(--text-soft);font-size:14px;margin-bottom:16px;">Master suite + open living + kitchen + morning room + study. Everything you need on one level.</p>
+        <img id="lvl1" src="" alt="First floor plan" style="width:100%;border-radius:8px;cursor:pointer;background:#fff;">
+      </div>
+      <div class="card">
+        <div class="card-title">Level 2</div>
+        <h2>Second Floor</h2>
+        <p style="color:var(--text-soft);font-size:14px;margin-bottom:16px;">2 secondary bedrooms + loft + bath upstairs. Kids' / guest zone separate from parents.</p>
+        <img id="lvl2" src="" alt="Second floor plan" style="width:100%;border-radius:8px;cursor:pointer;background:#fff;">
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <h2>Room Inventory</h2>
+      <div class="grid grid-2 mt-2">
+        <div>
+          <h3 style="color:var(--primary);">1st Floor</h3>
+          <ul id="rooms1" style="list-style:none;padding-left:0;font-size:15px;line-height:2;"></ul>
+        </div>
+        <div>
+          <h3 style="color:var(--primary);">2nd Floor</h3>
+          <ul id="rooms2" style="list-style:none;padding-left:0;font-size:15px;line-height:2;"></ul>
+        </div>
+      </div>
+      <div style="margin-top:24px;padding:16px;background:rgba(212,160,23,0.1);border-radius:8px;border-left:4px solid var(--accent);">
+        <strong>The Rosedale difference:</strong> Master bedroom is on the 1st floor with its own bath and walk-in closet. This is a different family philosophy than Kelly or Harbor Spring — parents downstairs, kids upstairs.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:white;">
+  <div class="container">
+    <div class="text-center mb-4">
+      <span style="font-size:13px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;">Exterior Styles</span>
+      <h2 style="font-size:36px;margin-top:8px;color:var(--primary);">Available Elevations</h2>
+    </div>
+    <div id="elevations" class="grid grid-3"></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="card" style="max-width:720px; margin:0 auto; text-align:center;">
+      <span style="font-size:13px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;">Pricing</span>
+      <h2 style="font-size:32px; margin-top:8px; color:var(--primary);">Verified Xenia Base Price</h2>
+      <div style="font-size:48px; font-family:var(--font-display); font-weight:700; color:var(--primary); margin: 16px 0;">$529,090</div>
+      <p style="color:var(--text-soft); font-size:15px;">$184/SF base · ~$769K all-in estimate</p>
+      <div class="flex gap-1 mt-3" style="justify-content:center; flex-wrap:wrap;">
+        <a href="budget.html?plan=rosedale" class="btn btn-primary">Budget Details</a>
+        <a href="compare.html" class="btn btn-outline">Compare All 3 Plans</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+const R = PLANS.rosedale;
+document.getElementById('rosedaleHero').style.backgroundImage = `url('${R.heroImage}')`;
+document.getElementById('lvl1').src = R.floorPlans.level1;
+document.getElementById('lvl2').src = R.floorPlans.level2;
+document.getElementById('tourLink').href = R.virtualTourUrl;
+
+document.getElementById('rooms1').innerHTML = R.rooms.level1.map(r => `<li>✓ ${r}</li>`).join('');
+document.getElementById('rooms2').innerHTML = R.rooms.level2.map(r => `<li>✓ ${r}</li>`).join('');
+
+document.getElementById('elevations').innerHTML = R.floorPlans.elevations.map(e => `
+  <div class="card" style="${e.name.includes('preferred') ? 'border-color:var(--accent);box-shadow:0 0 0 2px rgba(212,160,23,0.2);' : ''}">
+    <img src="${e.url}" alt="${e.name}" style="width:100%;border-radius:8px;margin-bottom:12px;">
+    <h3>${e.name} ${e.name.includes('preferred') ? '<span class="badge badge-accent">Our Pick</span>' : ''}</h3>
+    <p style="color:var(--text-soft);font-size:13px;line-height:1.6;">${e.desc}</p>
+  </div>
+`).join('');
+
+['lvl1', 'lvl2'].forEach(id => {
+  document.getElementById(id).addEventListener('click', () => {
+    const lb = document.querySelector('.lightbox');
+    if (lb) {
+      lb.querySelector('img').src = document.getElementById(id).src;
+      lb.classList.add('open');
+    }
+  });
+});
+initLightbox();
+</script>
+</body>
+</html>

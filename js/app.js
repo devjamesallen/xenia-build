@@ -95,13 +95,13 @@ function renderNav(activePage = '') {
       </button>
       <ul class="nav-links">
         <li><a href="index.html" data-page="home" class="${activePage==='home'?'active':''}">Overview</a></li>
-        <li><a href="kelly.html" data-page="kelly" class="${activePage==='kelly'?'active':''}">The Kelly</a></li>
+        <li><a href="kelly.html" data-page="kelly" class="${activePage==='kelly'?'active':''}">Kelly</a></li>
+        <li><a href="rosedale.html" data-page="rosedale" class="${activePage==='rosedale'?'active':''}">Rosedale</a></li>
         <li><a href="floor-plan.html" data-page="floorplan" class="${activePage==='floorplan'?'active':''}">Harbor Spring</a></li>
         <li><a href="compare.html" data-page="compare" class="${activePage==='compare'?'active':''}">Compare</a></li>
-        <li><a href="features.html" data-page="features" class="${activePage==='features'?'active':''}">Gold Package</a></li>
         <li><a href="budget.html" data-page="budget" class="${activePage==='budget'?'active':''}">Budget</a></li>
         <li><a href="configurator.html" data-page="configurator" class="${activePage==='configurator'?'active':''}">Configurator</a></li>
-        <li><a href="gallery.html" data-page="gallery" class="${activePage==='gallery'?'active':''}">Gallery</a></li>
+        <li><a href="features.html" data-page="features" class="${activePage==='features'?'active':''}">Gold Package</a></li>
         <li><a href="timeline.html" data-page="timeline" class="${activePage==='timeline'?'active':''}">Timeline</a></li>
         <li><a href="decisions.html" data-page="decisions" class="${activePage==='decisions'?'active':''}">Decisions</a></li>
       </ul>

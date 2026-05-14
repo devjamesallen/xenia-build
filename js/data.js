@@ -44,6 +44,46 @@ window.PLANS = {
     ]
   },
 
+  rosedale: {
+    id: "rosedale",
+    name: "The Rosedale",
+    tagline: "First Floor Master · Modern Home",
+    builder: "Diyanni Custom Homes",
+    sqft: 2872,
+    bedrooms: 3,
+    bathrooms: 3.5,
+    stories: 2,
+    garageType: "3-Car",
+    garageSqft: 728,
+    basePrice: 529090,
+    masterLocation: "1st Floor",
+    firstFloorGuest: false,
+    plansUrl: "https://diyannihomes.com/Plans/FloorPlanDetails/THE-ROSEDALE",
+    virtualTourUrl: "https://my.matterport.com/show/?m=fsNkDt5pMZN",
+    heroImage: "https://admin.diyannihomes.com/content/img/StandardElevation_FloorPlanId_72_638271872360047622.jpg",
+    floorPlans: {
+      level1: "https://admin.diyannihomes.com/FloorPlanImages/StandardFloorPlan_THE%20ROSEDALE_Level_1_FloorPlanId_72_639129844189102631.jpg",
+      level2: "https://admin.diyannihomes.com/FloorPlanImages/StandardFloorPlan_THE%20ROSEDALE_Level_2_FloorPlanId_72_638307272660248156.jpg",
+      elevations: [
+        { name: "Elevation A", url: "https://admin.diyannihomes.com/content/img/StandardElevation_FloorPlanId_72_638271856885652232.jpg", desc: "3-car front load garage, straight porch posts, standard roof trusses." },
+        { name: "Elevation B (preferred)", url: "https://admin.diyannihomes.com/content/img/StandardElevation_FloorPlanId_72_638271865552856347.jpg", desc: "Premium roof trusses, expanded porch (+82 SF). Optional dormer, tapered porch posts, metal roofing." },
+        { name: "Elevation C", url: "https://admin.diyannihomes.com/content/img/StandardElevation_FloorPlanId_72_638271872360047622.jpg", desc: "Hip roof system, casement windows w/ transoms across front, 1x4 trim boards." },
+        { name: "Elevation D", url: "https://admin.diyannihomes.com/content/img/StandardElevation_FloorPlanId_72_638271880729117007.jpg", desc: "Board & batten siding on front, cedar-wrapped porch posts + breast beam." }
+      ]
+    },
+    rooms: {
+      level1: ["Foyer", "Study (home office)", "Great Room", "Kitchen", "Morning Room", "Master Bedroom (1st floor)", "Master Bathroom + Walk-in Closet", "Powder Room / Half Bath", "Mudroom / Laundry", "3-Car Garage"],
+      level2: ["Loft", "Bedroom 2", "Bedroom 3", "Shared Bath(s)"]
+    },
+    highlights: [
+      "FIRST FLOOR MASTER — age-in-place ready",
+      "Morning room built in off the kitchen",
+      "2 bedrooms upstairs (smaller family or growing teens)",
+      "3.5 baths (rare for this SF)",
+      "Loft upstairs as flex space"
+    ]
+  },
+
   harborSpring: {
     id: "harborSpring",
     name: "The Harbor Spring",
@@ -93,7 +133,7 @@ window.HOME = {
   decisionDate: null,
   decisionStatus: "leaning-kelly",  // 'comparing' | 'leaning-kelly' | 'leaning-harborSpring' | 'locked-in'
   primaryPlan: "kelly",             // 'kelly' | 'harborSpring' | null
-  contenders: ["kelly", "harborSpring"],
+  contenders: ["kelly", "rosedale", "harborSpring"],
   leaningNote: "Wife loves the Kelly — its multi-gen layout and 1st floor guest suite. Still pending firm Diyanni quote in June.",
 
   // ---------- PLAN BASICS (defaults to Harbor Spring for backward compat) ----------

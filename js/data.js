@@ -66,9 +66,9 @@ window.PLANS = {
       level2: "https://admin.diyannihomes.com/FloorPlanImages/StandardFloorPlan_THE%20ROSEDALE_Level_2_FloorPlanId_72_638307272660248156.jpg",
       elevations: [
         { name: "Elevation A", url: "https://admin.diyannihomes.com/content/img/StandardElevation_FloorPlanId_72_638271856885652232.jpg", desc: "3-car front load garage, straight porch posts, standard roof trusses." },
-        { name: "Elevation B (preferred)", url: "https://admin.diyannihomes.com/content/img/StandardElevation_FloorPlanId_72_638271865552856347.jpg", desc: "Premium roof trusses, expanded porch (+82 SF). Optional dormer, tapered porch posts, metal roofing." },
+        { name: "Elevation B", url: "https://admin.diyannihomes.com/content/img/StandardElevation_FloorPlanId_72_638271865552856347.jpg", desc: "Premium roof trusses, expanded porch (+82 SF). Optional dormer, tapered porch posts, metal roofing." },
         { name: "Elevation C", url: "https://admin.diyannihomes.com/content/img/StandardElevation_FloorPlanId_72_638271872360047622.jpg", desc: "Hip roof system, casement windows w/ transoms across front, 1x4 trim boards." },
-        { name: "Elevation D", url: "https://admin.diyannihomes.com/content/img/StandardElevation_FloorPlanId_72_638271880729117007.jpg", desc: "Board & batten siding on front, cedar-wrapped porch posts + breast beam." }
+        { name: "Elevation D (leaning)", url: "https://admin.diyannihomes.com/content/img/StandardElevation_FloorPlanId_72_638271880729117007.jpg", desc: "Board & batten siding on front, cedar-wrapped porch posts + breast beam. Pending firm quote from Diyanni — choosing if not too expensive." }
       ]
     },
     rooms: {
@@ -196,7 +196,7 @@ window.HOME = {
 
   // ---------- DECISIONS TO MAKE ----------
   decisions: [
-    { id: "elevation", category: "Exterior", title: "Confirm Elevation B with Diyanni", due: "June 2026", priority: "high" },
+    { id: "elevation", category: "Exterior", title: "Get firm price on Elevation D (Rosedale) — go/no-go based on cost", due: "June 2026", priority: "high" },
     { id: "stone", category: "Exterior", title: "Choose stone color/style", due: "June 2026", priority: "med" },
     { id: "garage-door", category: "Exterior", title: "Choose garage door style", due: "June 2026", priority: "med" },
     { id: "front-door", category: "Exterior", title: "Front door style + color", due: "June 2026", priority: "med" },

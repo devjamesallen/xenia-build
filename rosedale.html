@@ -163,13 +163,19 @@ document.getElementById('tourLink').href = R.virtualTourUrl;
 document.getElementById('rooms1').innerHTML = R.rooms.level1.map(r => `<li>✓ ${r}</li>`).join('');
 document.getElementById('rooms2').innerHTML = R.rooms.level2.map(r => `<li>✓ ${r}</li>`).join('');
 
-document.getElementById('elevations').innerHTML = R.floorPlans.elevations.map(e => `
-  <div class="card" style="${e.name.includes('preferred') ? 'border-color:var(--accent);box-shadow:0 0 0 2px rgba(212,160,23,0.2);' : ''}">
+document.getElementById('elevations').innerHTML = R.floorPlans.elevations.map(e => {
+  const isLeaning = e.name.includes('leaning');
+  const isPreferred = e.name.includes('preferred') || isLeaning;
+  const badge = isLeaning
+    ? '<span class="badge badge-accent">Leaning ❤</span>'
+    : (isPreferred ? '<span class="badge badge-accent">Our Pick</span>' : '');
+  return `
+  <div class="card" style="${isPreferred ? 'border-color:var(--accent);box-shadow:0 0 0 2px rgba(212,160,23,0.2);' : ''}">
     <img src="${e.url}" alt="${e.name}" style="width:100%;border-radius:8px;margin-bottom:12px;">
-    <h3>${e.name} ${e.name.includes('preferred') ? '<span class="badge badge-accent">Our Pick</span>' : ''}</h3>
+    <h3>${e.name} ${badge}</h3>
     <p style="color:var(--text-soft);font-size:13px;line-height:1.6;">${e.desc}</p>
   </div>
-`).join('');
+`;}).join('');
 
 ['lvl1', 'lvl2'].forEach(id => {
   document.getElementById(id).addEventListener('click', () => {

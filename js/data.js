@@ -78,6 +78,7 @@ window.PLANS = {
     highlights: [
       "FIRST FLOOR MASTER — age-in-place ready",
       "Morning room built in off the kitchen",
+      "Planning to extend the sunroom (like the model home walkthrough)",
       "2 bedrooms upstairs (smaller family or growing teens)",
       "3.5 baths (rare for this SF)",
       "Loft upstairs as flex space"
@@ -131,10 +132,10 @@ window.PLANS = {
 window.HOME = {
   // ---------- DECISION ----------
   decisionDate: null,
-  decisionStatus: "leaning-kelly",  // 'comparing' | 'leaning-kelly' | 'leaning-harborSpring' | 'locked-in'
-  primaryPlan: "kelly",             // 'kelly' | 'harborSpring' | null
+  decisionStatus: "leaning-rosedale",  // 'comparing' | 'leaning-kelly' | 'leaning-rosedale' | 'leaning-harborSpring' | 'locked-in'
+  primaryPlan: "rosedale",             // 'kelly' | 'rosedale' | 'harborSpring' | null
   contenders: ["kelly", "rosedale", "harborSpring"],
-  leaningNote: "Wife loves the Kelly — its future-proof layout and 1st floor guest suite. Still pending firm Diyanni quote in June.",
+  leaningNote: "Leaning Rosedale — 1st floor master + extended sunroom (like the model home walkthrough). Pending firm Diyanni quote in June.",
 
   // ---------- PLAN BASICS (defaults to Harbor Spring for backward compat) ----------
   plan: "The Harbor Spring",

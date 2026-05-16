@@ -57,8 +57,8 @@
     <!-- PLAN PICKER -->
     <div style="display:flex; justify-content:center; margin-bottom:20px;">
       <div class="plan-pill">
-        <button data-plan="kelly" class="active">The Kelly</button>
-        <button data-plan="rosedale">The Rosedale</button>
+        <button data-plan="kelly">The Kelly</button>
+        <button data-plan="rosedale" class="active">The Rosedale</button>
         <button data-plan="harborSpring">Harbor Spring</button>
       </div>
     </div>
@@ -137,6 +137,7 @@ const OPTIONS = [
   { id: 'outdoor-utils', cat: 'Outdoor', label: 'Outdoor kitchen utility stubs', desc: 'Gas, water, electric stub-outs for future outdoor kitchen.', cost: 1500 },
 
   // STRUCTURAL OPTIONS
+  { id: 'extended-sunroom', cat: 'Structural Options', label: 'Extended sunroom (Rosedale, like model home)', desc: 'Extend the sunroom beyond standard footprint — like the Diyanni model walkthrough. More light + breathing room.', cost: 20000, checked: true },
   { id: 'finished-bonus', cat: 'Structural Options', label: 'Finished bonus room over garage', desc: 'Additional ~300-400 SF flex room over the garage.', cost: 22000 },
   { id: 'mud-built-ins', cat: 'Structural Options', label: 'Mudroom built-in lockers', desc: 'Custom cubbies + bench for the kids by the garage entry.', cost: 3500 },
 
@@ -146,7 +147,7 @@ const OPTIONS = [
   { id: 'ev-outlet', cat: 'Smart Home', label: 'EV charging outlet (240V)', desc: 'NEMA 14-50 outlet in garage for future EV charging.', cost: 600, checked: true }
 ];
 
-let currentPlan = 'kelly';
+let currentPlan = 'rosedale';
 let state = {};
 
 function loadState() {

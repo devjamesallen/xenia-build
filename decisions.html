@@ -261,18 +261,21 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   // Show plan leaning banner
   const banner = document.getElementById('planBanner');
   const text = document.getElementById('planBannerText');
+  const urls = { kelly: 'kelly.html', rosedale: 'rosedale.html', harborSpring: 'floor-plan.html' };
+  const names = { kelly: 'The Kelly', rosedale: 'The Rosedale', harborSpring: 'The Harbor Spring' };
   if (HOME.decisionStatus === 'leaning-kelly') {
     banner.style.display = 'block';
-    text.innerHTML = `Decisions apply to <strong><a href="kelly.html" style="color:var(--primary);">The Kelly</a></strong> (current lean). Many also apply to Harbor Spring if we switch.`;
+    text.innerHTML = `Decisions apply to <strong><a href="kelly.html" style="color:var(--primary);">The Kelly</a></strong> (current lean).`;
+  } else if (HOME.decisionStatus === 'leaning-rosedale') {
+    banner.style.display = 'block';
+    text.innerHTML = `Decisions apply to <strong><a href="rosedale.html" style="color:var(--primary);">The Rosedale</a></strong> (current lean).`;
   } else if (HOME.decisionStatus === 'leaning-harborSpring') {
     banner.style.display = 'block';
     text.innerHTML = `Decisions apply to <strong><a href="floor-plan.html" style="color:var(--primary);">The Harbor Spring</a></strong> (current lean).`;
   } else if (HOME.decisionStatus === 'locked-in' && HOME.primaryPlan) {
     banner.style.display = 'block';
     banner.style.background = 'rgba(16, 185, 129, 0.1)';
-    const planUrl = HOME.primaryPlan === 'kelly' ? 'kelly.html' : 'floor-plan.html';
-    const planName = HOME.primaryPlan === 'kelly' ? 'The Kelly' : 'The Harbor Spring';
-    text.innerHTML = `✅ Decisions apply to <strong><a href="${planUrl}" style="color:var(--primary);">${planName}</a></strong> · Plan locked in`;
+    text.innerHTML = `✅ Decisions apply to <strong><a href="${urls[HOME.primaryPlan]}" style="color:var(--primary);">${names[HOME.primaryPlan]}</a></strong> · Plan locked in`;
   }
 })();
 </script>
